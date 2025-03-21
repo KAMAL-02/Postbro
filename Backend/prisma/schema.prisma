@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  createdAt DateTime @default(now())
+
+  collections Collection[]
+  requests    Request[]
+  histories   History[]
+}
+
+model Collection {
+  id        String   @id @default(cuid())
+  name      String
+  userId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  requests Request[]
+}
+
+model Request {
+  id           String     @id @default(cuid())
+  name         String?
+  url          String
+  method       HttpMethod
+  headers      Json?
+  body         Json?
+  userId       String
+  collectionId String?
+  description  String?
+  createdAt    DateTime   @default(now())
+
+  collection Collection? @relation(fields: [collectionId], references: [id])
+  user       User        @relation(fields: [userId], references: [id])
+  response   Response[]
+  histories  History[]
+}
+
+model Response {
+  id        String   @id @default(cuid())
+  body      Json?
+  status    Int
+  headers   Json?
+  requestId String
+  createdAt DateTime @default(now())
+
+  request Request @relation(fields: [requestId], references: [id])
+}
+
+model History {
+  id        String   @id @default(cuid())
+  requestId String?
+  userId    String
+  timestamp DateTime @default(now())
+
+  request Request? @relation(fields: [requestId], references: [id])
+  user    User     @relation(fields: [userId], references: [id])
+}
+
+enum HttpMethod {
+  GET
+  POST
+  PUT
+  DELETE
+  PATCH
+  OPTIONS
+  HEAD
+}
