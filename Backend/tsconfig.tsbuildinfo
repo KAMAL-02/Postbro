@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/controllers/auth/authcontroller.ts","./src/controllers/request/apicontroller.ts","./src/middleware/passport.ts","./src/routes/apiroutes.ts"],"version":"5.8.2"}
+{"root":["./src/index.ts","./src/controllers/auth/authcontroller.ts","./src/controllers/request/apicontroller.ts","./src/middleware/passport.ts","./src/routes/apiroutes.ts","./src/utils/logger.ts","./src/utils/ratelimit.ts","./src/utils/validation.ts"],"version":"5.8.2"}
