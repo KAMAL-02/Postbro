@@ -5,7 +5,8 @@ import passport from '../middleware/passport';
 
 const router = Router();
 
-router.post('/request', passport.authenticate("jwt", {session: false}), sendApiRequest);
+// router.post('/request', passport.authenticate("jwt", {session: false}), sendApiRequest);
+router.post('/request', sendApiRequest);
 router.post('/signup', signup);
 router.post('/login', login);
 

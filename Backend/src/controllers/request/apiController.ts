@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 
 const sendApiRequest = async (req: Request, res: Response) => {
   console.log("Request body is: ", req.body);
-  const { method, url, params } = req.body;
+  const { method, url, params, headers } = req.body;
   if (!url || !method) {
     res.status(400).json({ message: "All fields are required" });
     return;
@@ -13,11 +13,12 @@ const sendApiRequest = async (req: Request, res: Response) => {
     const fullUrl = queryString ? `${url}?${queryString}` : url;
 
     console.log("Full URL:", fullUrl);
-    const response = await axios({ method, url, params: params || {} });
+    const response = await axios({ method, url, params: params || {}, headers: headers || {} });
+    console.log("Response from the API is: ", response);
 
     res.status(response.status).json({ status: response.status, data: response.data });
   } catch (error) {
-    console.error(error);
+    console.error("Error is", error);
 
     // Error from the url provided
     if(axios.isAxiosError(error)){
