@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import logger from "../../utils/logger";
 
 const sendApiRequest = async (req: Request, res: Response) => {
-  // console.log("Request body is: ", req.body);
+  // console.log("Request body is   : ", req.body);
   logger.info(`Recieved request: ${JSON.stringify(req.body)}`);
 
   const schemaValidation = apiSchema.safeParse(req.body);
