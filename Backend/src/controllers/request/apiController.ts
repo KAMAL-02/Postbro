@@ -23,7 +23,7 @@ const sendApiRequest = async (req: Request, res: Response) => {
     return;
   }
 
-  const { method, url, params, headers } = req.body;
+  const { method, url, params, headers, bodyData } = req.body;
   if (!url || !method) {
     res.status(400).json({ message: "All fields are required" });
     return;
@@ -35,13 +35,19 @@ const sendApiRequest = async (req: Request, res: Response) => {
     // console.log("Full URL:", fullUrl);
 
     // This is the actual request to the API
-    const response = await axios({
+
+    const requestConfig: any = {
       method,
       url,
       params: params || {},
       headers: headers || {},
       timeout: 5000,
-    });
+    }
+
+    if (["POST", "PUT", "PATCH"].includes(method.toUpperCase())) {
+      requestConfig.data = bodyData || {};
+    }
+    const response = await axios(requestConfig);
 
     logger.info(`API response received: ${JSON.stringify(response.data)}`);
 
