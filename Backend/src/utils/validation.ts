@@ -7,6 +7,7 @@ const apiSchema = z.object({
     method: z.enum(["GET", "POST", "PUT", "DELETE"]),
     params: z.record(z.string()).optional(),
     headers: z.record(z.string()).optional(),
+    bodyData: z.union([z.record(z.unknown()), z.array(z.unknown())]).optional(),
 })
 
 export { apiSchema };
