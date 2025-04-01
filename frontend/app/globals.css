@@ -134,3 +134,33 @@ body {
   background-color: rgba(170, 166, 162, 0.1) !important;
   color: #fff !important;
 }
+
+/* Custom styles for Rest body-inputs */
+
+.cm-editor {
+  background-color: #121212 !important; /* Dark background */
+}
+
+ /* Line number background */
+.cm-gutters {
+  background-color: #121212 !important;
+  color: #a6adc8 !important;
+  border-right: 1px solid #2e2d2c !important;
+}
+
+/* Change active line highlight color */
+.cm-activeLine {
+  background-color: #292c31 !important;
+}
+
+/* Change active line gutter (line numbers) */
+.cm-activeLineGutter {
+  background-color: #292c31 !important;
+  color: #cdd6f4 !important;
+}
+
+.cm-editor, .cm-content, .cm-gutters {
+  font-family: var(--font-jetbrains-mono), monospace !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+}
