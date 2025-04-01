@@ -29,7 +29,7 @@ export function AppSidebar() {
   const pathname = usePathname()
 
   return (
-    <Sidebar collapsible="icon" className="border-none">
+    <Sidebar collapsible="icon" className="border-none h-auto mt-11">
       <SidebarContent className="bg-[#282828] text-[#fff]">
         <SidebarGroup>
           <SidebarGroupContent>
@@ -57,7 +57,7 @@ export function AppSidebar() {
                             <TooltipTrigger>
                               <item.icon className="w-4 h-4 cursor-pointer" />
                             </TooltipTrigger>
-                            <TooltipContent side="right" align="center" className="text-[#df894c]">{item.title}</TooltipContent>
+                            <TooltipContent side="right" align="center" className="text-[#df894c] text-sm">{item.title}</TooltipContent>
                           </Tooltip>
                           )}
                         </a>
@@ -75,7 +75,7 @@ export function AppSidebar() {
               <TooltipTrigger asChild>
               <SidebarTrigger className=""/>
               </TooltipTrigger>
-              <TooltipContent side="right" align="center">Expand Sidebar</TooltipContent>
+              <TooltipContent side="right" align="center" className="text-[#df894c] text-sm">Expand Sidebar</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </SidebarFooter>
