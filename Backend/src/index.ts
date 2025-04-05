@@ -22,7 +22,7 @@ app.use('/api', apiRoutes);
 //Route to test the server
 app.get('/', (req, res) => {
     logger.info("Health check")
-    res.send('Hello World!');
+    res.send("Hello World!");
 })
 
 //Listen to the server

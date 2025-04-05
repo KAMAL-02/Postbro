@@ -4,7 +4,7 @@ import Rest from '@/components/rest/rest'
 
 const page = () => {
   return (
-    <div className='w-full h-full'>
+    <div className='h-full'>
       <Rest />
     </div>
   )

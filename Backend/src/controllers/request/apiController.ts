@@ -51,9 +51,8 @@ const sendApiRequest = async (req: Request, res: Response) => {
 
     logger.info(`API response received: ${JSON.stringify(response.data)}`);
 
-    res
-      .status(response.status)
-      .json({ status: response.status, data: response.data });
+    res.status(response.status).send(response.data);
+    
   } catch (error) {
     logger.error(`Error in API request: ${error}`);
 

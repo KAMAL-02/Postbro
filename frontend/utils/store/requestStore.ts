@@ -27,7 +27,7 @@ interface requestState {
     headers: { key: string; value: string }[];
     setHeaders: (headers: { key: string; value: string }[]) => void;
 
-    body: string;
+    body: any;
     setBody: (body: string) => void;
 }
 

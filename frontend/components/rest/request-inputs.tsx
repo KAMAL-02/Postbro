@@ -4,11 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Dropdown } from "primereact/dropdown";
 import { useRequestStore } from "@/utils/store/requestStore";
+import { useResponseStore } from "@/utils/store/responseStore";
+
 import axios from "axios";
 
 const RequestInputs = () => {
 
   const { params, body, headers, method, url, setMethod, setUrl } = useRequestStore();
+  const { setResponse, setStatus, setStatusText, setHeaders, response } = useResponseStore();
 
     const options = [
         { label: "GET", value: "GET" },
@@ -33,7 +36,7 @@ const RequestInputs = () => {
       if (params && params.length > 0) {
         // Filter out params that do not have both key and value
         requestConfig.params = params.reduce((acc: any, param: { key: string; value: string }) => {
-          if (param.key && param.value) {  // Only add if both key and value exist
+          if (param.key && param.value) {
             acc[param.key] = param.value;
           }
           return acc;
@@ -57,9 +60,24 @@ const RequestInputs = () => {
       console.log("Request Config is", requestConfig)
 
       try {
-        const response = await axios.post("http://localhost:5000/api/request", requestConfig)
-      } catch (error) {
+        const res = await axios.post("http://localhost:5000/api/request", requestConfig)
+        if(res.status === 200) {
+          console.log("Response Data:", res.data);
+          setResponse(res.data);
+          setStatus(res.data.status);
+          console.log("response is", response)
+        }
+        else {
+          console.error("Error in response:", response);
+          setResponse(response);
+          setStatusText(response.statusText);
+          setStatus(response.status);
+        }
+      } catch (error: any) {
         console.error("Error in API request:", error);
+        setResponse(error.response.data);
+        setStatusText(error.response.statusText);
+        setStatus(error.response.status);
       }
     }
 
@@ -110,7 +128,7 @@ const RequestInputs = () => {
 
         <Button
           type="submit"
-          className="bg-[#df894c] hover:bg-orange-400 text-black font-semibold py-2 px-4 rounded-md cursor-pointer"
+          className="bg-[#c76219] hover:bg-orange-400 text-black font-semibold py-2 px-4 rounded-md cursor-pointer"
           onClick={handleSendRequest}
         >
           Send
