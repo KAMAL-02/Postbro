@@ -9,132 +9,175 @@ import { useResponseStore } from "@/utils/store/responseStore";
 import axios from "axios";
 
 const RequestInputs = () => {
+  const { params, body, headers, method, url, setMethod, setUrl, setLoading } =
+    useRequestStore();
+  const {
+    setResponse,
+    setStatus,
+    setStatusText,
+    setHeaders,
+    setTimeTaken,
+    setSize,
+  } = useResponseStore();
 
-  const { params, body, headers, method, url, setMethod, setUrl } = useRequestStore();
-  const { setResponse, setStatus, setStatusText, setHeaders, response } = useResponseStore();
+  const options = [
+    { label: "GET", value: "GET" },
+    { label: "POST", value: "POST" },
+    { label: "PUT", value: "PUT" },
+    { label: "DELETE", value: "DELETE" },
+  ];
 
-    const options = [
-        { label: "GET", value: "GET" },
-        { label: "POST", value: "POST" },
-        { label: "PUT", value: "PUT" },
-        { label: "DELETE", value: "DELETE" },
-      ];
-    
-    const handleSendRequest = async() =>{
-      console.log("Method is", method)
-      console.log("URL is", url)
-      console.log("Params is", params)
-      console.log("Body is", body)
-      console.log("Headers is", headers)
+  const getResponseSize = (data: any) => {
+    const str = typeof data === "string" ? data : JSON.stringify(data);
+    return new Blob([str]).size; // returns size in bytes
+  };
 
-      const requestConfig: any = {
-        method,
-        url,
-        timeout: 5000,
-      };
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
 
-      if (params && params.length > 0) {
-        // Filter out params that do not have both key and value
-        requestConfig.params = params.reduce((acc: any, param: { key: string; value: string }) => {
+  const handleSendRequest = async () => {
+    setLoading(true);
+    setResponse(null);
+
+    const requestConfig: any = {
+      method,
+      url,
+      timeout: 10000,
+    };
+
+    if (params && params.length > 0) {
+      // Filter out params that do not have both key and value
+      requestConfig.params = params.reduce(
+        (acc: any, param: { key: string; value: string }) => {
           if (param.key && param.value) {
             acc[param.key] = param.value;
           }
           return acc;
-        }, {});
-      }
-      
-      if (headers && headers.length > 0) {
-        // Filter out headers that do not have both key and value
-        requestConfig.headers = headers.reduce((acc: any, header: { key: string; value: string }) => {
-          if (header.key && header.value) {  // Only add if both key and value exist
+        },
+        {}
+      );
+    }
+
+    if (headers && headers.length > 0) {
+      // Filter out headers that do not have both key and value
+      requestConfig.headers = headers.reduce(
+        (acc: any, header: { key: string; value: string }) => {
+          if (header.key && header.value) {
+            // Only add if both key and value exist
             acc[header.key] = header.value;
           }
           return acc;
-        }, {});
-      }
-
-      if (["POST", "PUT", "PATCH"].includes(method.toUpperCase())) {
-        requestConfig.data = body;
-      }
-
-      console.log("Request Config is", requestConfig)
-
-      try {
-        const res = await axios.post("http://localhost:5000/api/request", requestConfig)
-        if(res.status === 200) {
-          console.log("Response Data:", res.data);
-          setResponse(res.data);
-          setStatus(res.data.status);
-          console.log("response is", response)
-        }
-        else {
-          console.error("Error in response:", response);
-          setResponse(response);
-          setStatusText(response.statusText);
-          setStatus(response.status);
-        }
-      } catch (error: any) {
-        console.error("Error in API request:", error);
-        setResponse(error.response.data);
-        setStatusText(error.response.statusText);
-        setStatus(error.response.status);
-      }
+        },
+        {}
+      );
     }
 
+    if (["POST", "PUT", "PATCH"].includes(method.toUpperCase())) {
+      requestConfig.data = body;
+    }
+
+    console.log("Request Config is", requestConfig);
+
+    const startTime = performance.now(); // Start time for performance measurement
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/request",
+        requestConfig
+      );
+
+      const endTime = performance.now();
+      const timeTaken = Math.round(endTime - startTime); // Calculate time taken in milliseconds
+      console.log("Response is", res);
+      setStatus(res.status);
+      setStatusText(res.statusText);
+      setTimeTaken(timeTaken);
+
+      const size = getResponseSize(res.data);
+      const formattedSize = formatBytes(size);
+      setSize(formattedSize);
+
+      if (res.status === 200) {
+        setResponse(res.data);
+      } else {
+        console.error("Error in response:", res);
+        setResponse(res.data);
+        setStatusText(res.statusText);
+        setStatus(res.status);
+      }
+    } catch (error: any) {
+      const endTime = performance.now();
+      const timeTaken = Math.round(endTime - startTime);
+      setTimeTaken(timeTaken);
+
+      const size = getResponseSize(error.response?.data || {});
+      const formattedSize = formatBytes(size);
+      setSize(formattedSize);
+      console.error("Error in API request:", error);
+      setResponse(error.response.data.data);
+      setStatusText(error.response.statusText);
+      setStatus(error.response.status);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-      <div className="flex w-full items-center gap-3 p-3 rounded-lg shadow-md">
-        <Dropdown
-          options={options}
-          value={method}
-          onChange={(e) => setMethod(e.target.value)}
-          className={`w-28 border border-gray-600 bg-[#282828] p-2 rounded-md text-xs font-medium ${
-            method === "GET"
-              ? "text-green-400"
-              : method === "POST"
-              ? "text-yellow-400"
-              : method === "PUT"
-              ? "text-blue-400"
-              : method === "DELETE"
-              ? "text-red-400"
-              : "text-white"
-          }`}
-          panelClassName="bg-[#282828] text-white border border-gray-600 p-3 text-xs"
-          itemTemplate={(option) => {
-            const colorMap: Record<string, string> = {
-              GET: "text-green-400",
-              POST: "text-yellow-400",
-              PUT: "text-blue-400",
-              DELETE: "text-red-400",
-            };
+    <div className="flex w-full items-center gap-3 p-3 rounded-lg shadow-md">
+      <Dropdown
+        options={options}
+        value={method}
+        onChange={(e) => setMethod(e.target.value)}
+        className={`w-28 border border-gray-600 bg-[#282828] p-2 rounded-md text-xs font-medium ${
+          method === "GET"
+            ? "text-green-400"
+            : method === "POST"
+            ? "text-yellow-400"
+            : method === "PUT"
+            ? "text-blue-400"
+            : method === "DELETE"
+            ? "text-red-400"
+            : "text-white"
+        }`}
+        panelClassName="bg-[#282828] text-white border border-gray-600 p-3 text-xs"
+        itemTemplate={(option) => {
+          const colorMap: Record<string, string> = {
+            GET: "text-green-400",
+            POST: "text-yellow-400",
+            PUT: "text-blue-400",
+            DELETE: "text-red-400",
+          };
 
-            return (
-              <div
-                className={`py-2 px-2 font-medium ${colorMap[option.value]}`}
-              >
-                {option.label}
-              </div>
-            );
-          }}
-        />
+          return (
+            <div className={`py-2 px-2 font-medium ${colorMap[option.value]}`}>
+              {option.label}
+            </div>
+          );
+        }}
+      />
 
-        <Input
-          type="text"
-          placeholder="Enter a URL or paste a CURL command"
-          onChange={(e) => setUrl(e.target.value)}
-          value={url}
-          className="flex-1 border border-gray-600 bg-[#282828] text-white p-2 rounded-md"
-          style={{ fontFamily: "var(--font-jetbrains-mono)" }}
-        />
+      <Input
+        type="text"
+        placeholder="Enter a URL or paste a CURL command"
+        onChange={(e) => setUrl(e.target.value)}
+        value={url}
+        className="flex-1 border border-gray-600 bg-[#282828] text-white p-2 rounded-md"
+        style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+      />
 
-        <Button
-          type="submit"
-          className="bg-[#c76219] hover:bg-orange-400 text-black font-semibold py-2 px-4 rounded-md cursor-pointer"
-          onClick={handleSendRequest}
-        >
-          Send
-        </Button>
-      </div>
-  )
-}
+      <Button
+        type="submit"
+        className="bg-[#c76219] hover:bg-orange-400 text-black font-semibold py-2 px-4 rounded-md cursor-pointer"
+        onClick={handleSendRequest}
+      >
+        Send
+      </Button>
+    </div>
+  );
+};
 
-export default RequestInputs
+export default RequestInputs;

@@ -12,6 +12,12 @@ interface responseState{
 
     headers: any;
     setHeaders: (headers: any) => void;
+
+    timeTaken: number;
+    setTimeTaken: (timeTaken: number) => void;
+
+    size: string;
+    setSize: (size: string) => void;
 }
 
 export const useResponseStore = create<responseState>((set) => ({
@@ -29,4 +35,10 @@ export const useResponseStore = create<responseState>((set) => ({
 
     headers: {},
     setHeaders: (headers: any) => set({ headers }),
+
+    timeTaken: 0,
+    setTimeTaken: (timeTaken: number) => set({ timeTaken }),
+
+    size: "",
+    setSize: (size: string) => set({ size }),
 }))

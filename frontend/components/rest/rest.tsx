@@ -10,7 +10,7 @@ import Response from "./response";
 
 const Rest = () => {
   return (
-    <div className="h-screen">
+    <div className="h-screen max-h-screen">
       <ResizablePanelGroup direction="vertical" className="h-full">
         <ResizablePanel className="w-full" defaultSize={50} minSize={30}>
           <div className="flex flex-col h-full">
@@ -19,8 +19,8 @@ const Rest = () => {
             </div>
           </div>
         </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel className="w-full max-w-full overflow-x-auto" minSize={30}>
+        <ResizableHandle className=" bg-gray-600 hover:bg-orange-500" />
+        <ResizablePanel className="" minSize={30}>
           <div className="flex flex-col h-full">
             <div className="flex-1 overflow-auto">
               <Response />

@@ -41,7 +41,7 @@ const sendApiRequest = async (req: Request, res: Response) => {
       url,
       params: params || {},
       headers: headers || {},
-      timeout: 5000,
+      timeout: 10000,
     }
 
     if (["POST", "PUT", "PATCH"].includes(method.toUpperCase())) {
