@@ -27,8 +27,11 @@ interface requestState {
     headers: { key: string; value: string }[];
     setHeaders: (headers: { key: string; value: string }[]) => void;
 
-    body: string;
+    body: any;
     setBody: (body: string) => void;
+
+    loading: boolean;
+    setLoading: (loading: boolean) => void;
 }
 
 export const useRequestStore = create<requestState>((set) => ({
@@ -49,5 +52,8 @@ export const useRequestStore = create<requestState>((set) => ({
   
     headers: [{ key: "", value: "" }],
     setHeaders: (headers) => set({ headers }),
+
+    loading: false,
+    setLoading: (loading) => set({ loading }),
 }));
   

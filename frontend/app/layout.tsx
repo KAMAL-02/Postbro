@@ -30,11 +30,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} ${jetbrainsMono.variable} h-screen flex flex-col`}>
         <Navbar />
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex overflow-hidden max-w-screen">
           <SidebarProvider>
             <AppSidebar />
-            <main className="flex-1">
-              {children}
+            <main className="flex-1 max-w-lvw">
+              {children}  
             </main>
           </SidebarProvider>
         </div>
