@@ -5,7 +5,7 @@ import { useRequestStore } from "@/utils/store/requestStore";
 import { useResponseStore } from "@/utils/store/responseStore";
 import { Plus, X } from "lucide-react";
 import { useEffect } from "react";
-import { FadeLoader } from "react-spinners";
+import TabTitleEdit from "../dialog/tab-title";
 import {
   Tooltip,
   TooltipContent,
@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/tooltip";
 
 const TabsBar = () => {
-  const { tabs, activeTabId, addTab, removeTab, setActiveTab } = useTabStore();
+  const { tabs, activeTabId, addTab, removeTab, setActiveTab, updateTabTitle } = useTabStore();
   const { initRequest, requests } = useRequestStore();
   const { initResponse, responses } = useResponseStore();
 
@@ -55,7 +55,11 @@ const TabsBar = () => {
           >
             {tab.method}
           </span>
-          <span className="max-w-xs text-sm">{tab.title}</span>
+          <TabTitleEdit tabId={tab.id} currentTitle={tab.title} onSave={(id, newTitle) => updateTabTitle(id, newTitle)}
+            trigger={
+              <span className="max-w-xs text-sm truncate">{tab.title}</span>
+            }
+            />
           <Tooltip>
             <TooltipTrigger asChild>
               <button
