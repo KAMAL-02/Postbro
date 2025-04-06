@@ -1,44 +1,154 @@
+// import { create } from "zustand";
+
+// interface responseState{
+//     response: any;
+//     setResponse: (response: any) => void;
+
+//     status: number;
+//     setStatus: (status: number) => void;
+
+//     statusText: string;
+//     setStatusText: (statusText: string) => void;
+
+//     headers: any;
+//     setHeaders: (headers: any) => void;
+
+//     timeTaken: number;
+//     setTimeTaken: (timeTaken: number) => void;
+
+//     size: string;
+//     setSize: (size: string) => void;
+// }
+
+// export const useResponseStore = create<responseState>((set) => ({
+//     response: null,
+//     setResponse: (response: any) => {
+//         console.log("Response set to:", response);
+//         set({ response })
+//     },
+
+//     status: 0,
+//     setStatus: (status: number) => set({ status }),
+
+//     statusText: "",
+//     setStatusText: (statusText: string) => set({ statusText }),
+
+//     headers: {},
+//     setHeaders: (headers: any) => set({ headers }),
+
+//     timeTaken: 0,
+//     setTimeTaken: (timeTaken: number) => set({ timeTaken }),
+
+//     size: "",
+//     setSize: (size: string) => set({ size }),
+// }))
+
+
 import { create } from "zustand";
 
-interface responseState{
-    response: any;
-    setResponse: (response: any) => void;
-
-    status: number;
-    setStatus: (status: number) => void;
-
-    statusText: string;
-    setStatusText: (statusText: string) => void;
-
-    headers: any;
-    setHeaders: (headers: any) => void;
-
-    timeTaken: number;
-    setTimeTaken: (timeTaken: number) => void;
-
-    size: string;
-    setSize: (size: string) => void;
+interface ResponseData {
+  response: any;
+  status: number;
+  statusText: string;
+  headers: any;
+  timeTaken: number;
+  size: string;
 }
 
-export const useResponseStore = create<responseState>((set) => ({
-    response: null,
-    setResponse: (response: any) => {
-        console.log("Response set to:", response);
-        set({ response })
-    },
+interface ResponseState {
+  responses: Record<string, ResponseData>;
+  
+  // Methods to update response data for a specific tab
+  setResponse: (tabId: string, response: any) => void;
+  setStatus: (tabId: string, status: number) => void;
+  setStatusText: (tabId: string, statusText: string) => void;
+  setHeaders: (tabId: string, headers: any) => void;
+  setTimeTaken: (tabId: string, timeTaken: number) => void;
+  setSize: (tabId: string, size: string) => void;
+  
+  // Initialize a new response for a tab
+  initResponse: (tabId: string) => void;
+}
 
-    status: 0,
-    setStatus: (status: number) => set({ status }),
+const defaultResponseData: ResponseData = {
+  response: null,
+  status: 0,
+  statusText: "",
+  headers: {},
+  timeTaken: 0,
+  size: "",
+};
 
-    statusText: "",
-    setStatusText: (statusText: string) => set({ statusText }),
-
-    headers: {},
-    setHeaders: (headers: any) => set({ headers }),
-
-    timeTaken: 0,
-    setTimeTaken: (timeTaken: number) => set({ timeTaken }),
-
-    size: "",
-    setSize: (size: string) => set({ size }),
-}))
+export const useResponseStore = create<ResponseState>((set) => ({
+  responses: {},
+  
+  initResponse: (tabId) => set((state) => ({
+    responses: {
+      ...state.responses,
+      [tabId]: { ...defaultResponseData }
+    }
+  })),
+  
+  setResponse: (tabId, response) => set((state) => {
+    console.log(`Response set for tab ${tabId}:`, response);
+    return {
+      responses: {
+        ...state.responses,
+        [tabId]: {
+          ...state.responses[tabId] || defaultResponseData,
+          response
+        }
+      }
+    };
+  }),
+  
+  setStatus: (tabId, status) => set((state) => ({
+    responses: {
+      ...state.responses,
+      [tabId]: {
+        ...state.responses[tabId] || defaultResponseData,
+        status
+      }
+    }
+  })),
+  
+  setStatusText: (tabId, statusText) => set((state) => ({
+    responses: {
+      ...state.responses,
+      [tabId]: {
+        ...state.responses[tabId] || defaultResponseData,
+        statusText
+      }
+    }
+  })),
+  
+  setHeaders: (tabId, headers) => set((state) => ({
+    responses: {
+      ...state.responses,
+      [tabId]: {
+        ...state.responses[tabId] || defaultResponseData,
+        headers
+      }
+    }
+  })),
+  
+  setTimeTaken: (tabId, timeTaken) => set((state) => ({
+    responses: {
+      ...state.responses,
+      [tabId]: {
+        ...state.responses[tabId] || defaultResponseData,
+        timeTaken
+      }
+    }
+  })),
+  
+  setSize: (tabId, size) => set((state) => ({
+    responses: {
+      ...state.responses,
+      [tabId]: {
+        ...state.responses[tabId] || defaultResponseData,
+        size
+      }
+    }
+  })),
+}));

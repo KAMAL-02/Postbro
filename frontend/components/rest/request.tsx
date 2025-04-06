@@ -5,13 +5,17 @@ import { useState } from "react";
 import RequestTabs from "./request-tabs";
 import RequestInputs from "./request-inputs";
 
-const Request = () => {
+interface RequestProps {
+  tabId: any;
+}
+
+const Request: React.FC<RequestProps> = ({tabId}) => {
 
   return (
     <div className="h-full flex flex-col">
-      <RequestInputs />
+      <RequestInputs tabId={tabId} />
       <div className="flex-1 overflow-hidden">
-        <RequestTabs />
+        <RequestTabs tabId={tabId}/>
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import Navbar from "@/components/navbar";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 import { Inter, JetBrains_Mono } from "next/font/google";
@@ -28,14 +29,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} ${jetbrainsMono.variable} h-screen flex flex-col`}>
+      <body
+        className={`${inter.className} ${jetbrainsMono.variable} h-screen flex flex-col`}
+      >
         <Navbar />
         <div className="flex-1 flex overflow-hidden max-w-screen">
           <SidebarProvider>
             <AppSidebar />
-            <main className="flex-1 max-w-lvw">
-              {children}  
-            </main>
+            <main className="flex-1 max-w-lvw">{children}</main>
+            <Toaster
+              toastOptions={{
+                className: "invert",
+              }}
+            />
           </SidebarProvider>
         </div>
       </body>

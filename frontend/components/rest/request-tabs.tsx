@@ -2,7 +2,11 @@ import { useRequestStore } from "@/utils/store/requestStore";
 import KeyValueInput from "./key-value";
 import BodyInput from "./body-input";
 
-const RequestTabs = () => {
+interface RequestTabsProps {
+  tabId: string;
+}
+
+const RequestTabs: React.FC<RequestTabsProps> = ({tabId}) => {
   // const [activeTab, setActiveTab] = useState<"parameters" | "body" | "headers">(
   //   "body"
   // );
@@ -11,7 +15,14 @@ const RequestTabs = () => {
   // const [body, setBody] = useState("");
   // const [headers, setHeaders] = useState([{ key: "", value: "" }]);
 
-  const { activeTab, setActiveTab, params, setParams, body, setBody, headers, setHeaders } = useRequestStore();
+  // const { activeTab, setActiveTab, params, setParams, body, setBody, headers, setHeaders } = useRequestStore();
+  const { requests, setActiveTab } = useRequestStore();
+
+  const requestData = requests[tabId] || {
+    activeTab: "body",
+  }
+
+  const { activeTab } = requestData;
 
   return (
     <div className="flex flex-col h-full">
@@ -25,7 +36,7 @@ const RequestTabs = () => {
                 : "text-gray-400 hover:text-white"
             }`}
             onClick={() =>
-              setActiveTab(tab as "parameters" | "body" | "headers")
+              setActiveTab(tabId, tab as "parameters" | "body" | "headers")
             }
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -34,9 +45,9 @@ const RequestTabs = () => {
       </div>
 
       <div className="px-4 pb-4 pt-2 rounded-md flex-1 overflow-auto">
-        {activeTab === "parameters" && <KeyValueInput type="parameters" />}
-        {activeTab === "body" && <BodyInput />}
-        {activeTab === "headers" && <KeyValueInput type="headers" />}
+        {activeTab === "parameters" && <KeyValueInput type="parameters" tabId={tabId} />}
+        {activeTab === "body" && <BodyInput tabId={tabId}/>}
+        {activeTab === "headers" && <KeyValueInput type="headers" tabId={tabId}/>}
       </div>
     </div>
   );

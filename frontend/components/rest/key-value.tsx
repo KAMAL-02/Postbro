@@ -5,13 +5,24 @@ import { useRequestStore } from "@/utils/store/requestStore";
 
 interface KeyValueListProps {
   type: "parameters" | "headers";
+  tabId: string;
 }
 
-const KeyValueInput = ({ type }: KeyValueListProps) => {
-  const { params, setParams, headers, setHeaders } = useRequestStore();
+const KeyValueInput = ({ type, tabId }: KeyValueListProps) => {
+  // const { params, setParams, headers, setHeaders } = useRequestStore();
 
-  const data = type === "parameters" ? params : headers;
-  const setData = type === "parameters" ? setParams : setHeaders;
+  const { requests, setParams, setHeaders } = useRequestStore();
+  const requestData = requests[tabId] || {
+    params: [{ key: "", value: "" }],
+    headers: [{ key: "", value: "" }]
+  };
+
+  const data = type === "parameters" ? requestData.params : requestData.headers;
+  
+  // const setData = type === "parameters" ? setParams : setHeaders;
+
+  const setData = type === "parameters" ? 
+  (params: any) => setParams(tabId, params) : (headers: any) => setHeaders(tabId, headers);
 
   const handleInputChange = (index: number, field: "key" | "value", value: string) => {
     const newData = [...data];
