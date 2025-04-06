@@ -41,7 +41,7 @@ const TabTitleEdit = ({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="bg-[#1e1e1e] border border-[#333] text-white">
-        <DialogHeader>
+        <DialogHeader className="flex items-center justify-between">
           <DialogTitle className="text-white">Edit Tab Title</DialogTitle>
         </DialogHeader>
         <Input

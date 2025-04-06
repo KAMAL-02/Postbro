@@ -35,6 +35,7 @@ const signup = async ( req: Request, res: Response ) => {
 }
 
 const login = async ( req: Request, res: Response ) => {
+    console.log("Login request received", req.body);
     const { email, password } = req.body;
     if( !email || !password ) {
         res.status(400).json({ message: "All fields are required." });
@@ -54,8 +55,25 @@ const login = async ( req: Request, res: Response ) => {
         return;
     }
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, { expiresIn: '1d' });
-    res.status(200).json({ message: "Login successful", token });
+
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // true in production only
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+
+    res.status(200).json({ message: "Login successful"});
     return;
 }
 
-export { signup, login };
+const logout = (req: Request, res: Response) => {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+    res.status(200).json({ message: "Logged out successfully" });
+};
+
+export { signup, login, logout };

@@ -68,29 +68,7 @@ interface RequestState {
     body: "",
     loading: false,
   };
-// export const useRequestStore = create<RequestState>((set) => ({
-//     method: "GET",
-//     setMethod: (method) => set({ method }),
 
-//     url: "",
-//     setUrl: (url) => set({ url }),
-    
-//     activeTab: "body",
-//     setActiveTab: (tab) => set({ activeTab: tab }),
-  
-//     params: [{ key: "", value: "" }],
-//     setParams: (params) => set({ params }),
-  
-//     body: "",
-//     setBody: (body) => set({ body }),
-  
-//     headers: [{ key: "", value: "" }],
-//     setHeaders: (headers) => set({ headers }),
-
-//     loading: false,
-//     setLoading: (loading) => set({ loading }),
-// }));
-  
 export const useRequestStore = create<RequestState>((set) => ({
     requests: {},
     

@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { inter } from "@/utils/fonts";
+import AuthDialog from "./dialog/auth-dialog";
 import {
   Tooltip,
   TooltipContent,
@@ -35,11 +36,12 @@ const Navbar = () => {
         </TooltipContent>
         </Tooltip>
 
-        <Link href="/login">
-          <Button className="text-sm bg-[#df894c] text-black hover:bg-orange-400 transition-colors duration-200 cursor-pointer font-semibold">
+      
+          {/* <Button className="text-sm bg-[#df894c] text-black hover:bg-orange-400 transition-colors duration-200 cursor-pointer font-semibold">
             Login
-          </Button>
-        </Link>
+          </Button> */}
+
+          <AuthDialog />
       </div>
     </nav>
   );
