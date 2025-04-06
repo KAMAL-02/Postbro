@@ -5,20 +5,46 @@ import { Button } from "@/components/ui/button";
 import { Dropdown } from "primereact/dropdown";
 import { useRequestStore } from "@/utils/store/requestStore";
 import { useResponseStore } from "@/utils/store/responseStore";
-
+import { useTabStore } from "@/utils/store/tabStore";
+import { useEffect } from "react";
 import axios from "axios";
 
-const RequestInputs = () => {
-  const { params, body, headers, method, url, setMethod, setUrl, setLoading } =
-    useRequestStore();
-  const {
-    setResponse,
-    setStatus,
-    setStatusText,
-    setHeaders,
-    setTimeTaken,
-    setSize,
-  } = useResponseStore();
+interface RequestInputsProps {
+  tabId: string;
+}
+
+const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
+  // const { params, body, headers, method, url, setMethod, setUrl, setLoading } =
+  //   useRequestStore();
+  // const {
+  //   setResponse,
+  //   setStatus,
+  //   setStatusText,
+  //   setHeaders,
+  //   setTimeTaken,
+  //   setSize,
+  // } = useResponseStore();
+
+  const requestData = useRequestStore((state) => state.requests[tabId]);
+  const setMethod = useRequestStore((state) => state.setMethod);
+  const setUrl = useRequestStore((state) => state.setUrl);
+  const setLoading = useRequestStore((state) => state.setLoading);
+  const initRequest = useRequestStore((state) => state.initRequest);
+  const { setResponse, setStatus, setStatusText, setHeaders, setTimeTaken, setSize } = useResponseStore();
+  const { updateTabMethod, updateTabTitle } = useTabStore();
+
+  useEffect(() => {
+    if (tabId && !requestData) {
+      initRequest(tabId);
+    }
+  }, [tabId, requestData, initRequest]);
+  
+  // guard against missing requestData
+  if (!requestData) return null;
+  
+  const { method, url, params, headers, body, loading } = requestData;
+  
+  // const { method, url, params, headers, body, loading } = requestData;
 
   const options = [
     { label: "GET", value: "GET" },
@@ -40,9 +66,19 @@ const RequestInputs = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
+  const handleMethodChange = (value: string) => {
+    setMethod(tabId, value);
+    updateTabMethod(tabId, value);
+  };
+  
+  const handleUrlChange = (value: string) => {
+    console.log("value is", value);
+    setUrl(tabId, value);
+  };
+
   const handleSendRequest = async () => {
-    setLoading(true);
-    setResponse(null);
+    setLoading(tabId, true);
+    setResponse(tabId, null);
 
     const requestConfig: any = {
       method,
@@ -93,36 +129,36 @@ const RequestInputs = () => {
       const endTime = performance.now();
       const timeTaken = Math.round(endTime - startTime); // Calculate time taken in milliseconds
       console.log("Response is", res);
-      setStatus(res.status);
-      setStatusText(res.statusText);
-      setTimeTaken(timeTaken);
+      setStatus(tabId, res.status);
+      setStatusText(tabId, res.statusText);
+      setTimeTaken(tabId, timeTaken);
 
       const size = getResponseSize(res.data);
       const formattedSize = formatBytes(size);
-      setSize(formattedSize);
+      setSize(tabId, formattedSize);
 
       if (res.status === 200) {
-        setResponse(res.data);
+        setResponse(tabId, res.data);
       } else {
         console.error("Error in response:", res);
-        setResponse(res.data);
-        setStatusText(res.statusText);
-        setStatus(res.status);
+        setResponse(tabId, res.data);
+        setStatusText(tabId, res.statusText);
+        setStatus(tabId, res.status);
       }
     } catch (error: any) {
       const endTime = performance.now();
       const timeTaken = Math.round(endTime - startTime);
-      setTimeTaken(timeTaken);
+      setTimeTaken(tabId, timeTaken);
 
       const size = getResponseSize(error.response?.data || {});
       const formattedSize = formatBytes(size);
-      setSize(formattedSize);
+      setSize(tabId, formattedSize);
       console.error("Error in API request:", error);
-      setResponse(error.response.data.data);
-      setStatusText(error.response.statusText);
-      setStatus(error.response.status);
+      setResponse(tabId, error.response.data.data);
+      setStatusText(tabId, error.response.statusText);
+      setStatus(tabId, error.response.status);
     } finally {
-      setLoading(false);
+      setLoading(tabId, false);
     }
   };
 
@@ -131,7 +167,7 @@ const RequestInputs = () => {
       <Dropdown
         options={options}
         value={method}
-        onChange={(e) => setMethod(e.target.value)}
+        onChange={(e) => handleMethodChange(e.target.value)}
         className={`w-28 border border-gray-600 bg-[#282828] p-2 rounded-md text-xs font-medium ${
           method === "GET"
             ? "text-green-400"
@@ -163,7 +199,7 @@ const RequestInputs = () => {
       <Input
         type="text"
         placeholder="Enter a URL or paste a CURL command"
-        onChange={(e) => setUrl(e.target.value)}
+        onChange={(e) => handleUrlChange(e.target.value)}
         value={url}
         className="flex-1 border border-gray-600 bg-[#282828] text-white p-2 rounded-md"
         style={{ fontFamily: "var(--font-jetbrains-mono)" }}

@@ -10,15 +10,26 @@ import { jsonParseLinter } from "@codemirror/lang-json";
 import { indentOnInput } from "@codemirror/language";
 import { linter, lintGutter } from "@codemirror/lint";
 
-const BodyInput = () => {
-  const { body, setBody } = useRequestStore();
+interface BodyInputProps {
+  tabId: string;
+}
+
+const BodyInput = ({tabId}: BodyInputProps) => {
+  // const { body, setBody } = useRequestStore();
+
+  const { requests, setBody } = useRequestStore();
+  const requestData = requests[tabId] || {
+    body: "",
+  };
+  const { body } = requestData;
+
   const [hasTyped, setHasTyped] = useState(false);
 
   const handleChange = (value: any) => {
     if (!hasTyped) {
       setHasTyped(true);
     }
-    setBody(value);
+    setBody(tabId, value);
   };
 
   return (

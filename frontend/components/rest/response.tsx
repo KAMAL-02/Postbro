@@ -9,7 +9,7 @@ import { dracula } from "@uiw/codemirror-theme-dracula";
 import { EditorView } from "@codemirror/view";
 import { Copy, Check, ArrowDownToLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Hourglass } from "react-loader-spinner";
+import { FadeLoader } from "react-spinners";
 
 import {
   Tooltip,
@@ -17,9 +17,32 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const ResponseSection = () => {
-  const { response, status, statusText, timeTaken, size } = useResponseStore();
-  const { loading } = useRequestStore();
+interface ResponseSectionProps {
+  tabId: any;
+}
+
+const ResponseSection = ({tabId}: ResponseSectionProps) => {
+  // const { response, status, statusText, timeTaken, size } = useResponseStore();
+  // const { loading } = useRequestStore();
+
+  const { responses } = useResponseStore();
+  const { requests } = useRequestStore();
+
+  const responseData = responses[tabId] || {
+    response: null,
+    status: 0,
+    statusText: "",
+    headers: {},
+    timeTaken: 0,
+    size: ""
+  };
+  
+  const requestData = requests[tabId] || {
+    loading: false
+  };
+
+  const { response, status, statusText, timeTaken, size } = responseData;
+  const { loading } = requestData;
 
   const [formattedResponse, setFormattedResponse] = useState("");
   const [copied, setCopied] = useState(false);
@@ -138,15 +161,7 @@ const ResponseSection = () => {
       <div className="flex-1 overflow-auto max-w-full mb-5">
         {loading ? (
           <div className="flex justify-center items-center h-full">
-            <Hourglass
-              visible={true}
-              height="30"
-              width="30"
-              ariaLabel="hourglass-loading"
-              wrapperStyle={{}}
-              wrapperClass=""
-              colors={['#ffa94d', '#2b2b2b']}
-            />
+            <FadeLoader color="#df894c" height={10} width={5} margin={0} radius={0} />
           </div>
         ) : (
           response && (

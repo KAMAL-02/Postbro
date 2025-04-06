@@ -31,7 +31,7 @@ const Navbar = () => {
         </Link>
         </TooltipTrigger>
         <TooltipContent side="left" align="center" className="text-[#df894c] text-sm">
-          GitHub Repo
+          GitHub
         </TooltipContent>
         </Tooltip>
 
