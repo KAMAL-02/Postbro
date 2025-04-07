@@ -53,7 +53,7 @@ const AuthDialog = () => {
   }, []);
 
   const handleAuth = async () => {
-    const endpoint = isLogin ? `${BASE_URL}/login` : `${BASE_URL}/signup`;
+    const endpoint = isLogin ? `${BASE_URL}/auth/login` : `${BASE_URL}/auth/signup`;
 
     try {
       const { data } = await axios.post(
@@ -84,7 +84,7 @@ const AuthDialog = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
+      await axios.post(`${BASE_URL}/auth/logout`, {}, { withCredentials: true });
       toast.success("Logged out successfully");
       setIsLoggedIn(false);
     } catch (err) {

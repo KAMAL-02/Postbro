@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/sidebar"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { usePathname } from "next/navigation"
-import { use } from "react"
 
 const items = [
   { title: "Rest", url: "/", icon: Link2 },
@@ -36,7 +35,7 @@ export function AppSidebar() {
             <SidebarMenu >
               <TooltipProvider delayDuration={800} skipDelayDuration={500}>
               {items.map((item) => {
-                  const isActive = pathname === item.url; // Check if it's the active page
+                  const isActive = pathname === item.url;
                   
                   return (
                     <SidebarMenuItem key={item.title}>

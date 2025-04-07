@@ -24,9 +24,49 @@ model User {
   histories   History[]
 }
 
+// model Request {
+//   id           String     @id @default(cuid())
+//   title         String?
+//   url          String
+//   method       HttpMethod
+//   headers      Json?
+//   params       Json?
+//   body         Json?
+//   userId       String
+//   createdAt    DateTime   @default(now())
+
+//   user       User        @relation(fields: [userId], references: [id])
+//   response    Response?  @relation(fields: [responseId], references: [id])
+//   responseId  String?    @unique
+
+//   history     History?   
+// }
+
+// model Response {
+//   id        String   @id @default(cuid())
+//   body      Json?
+//   status    Int
+//   statusText String?
+//   headers   Json?
+//   requestId String
+//   createdAt DateTime @default(now())
+
+//   request    Request?
+// }
+
+// model History {
+//   id        String   @id @default(cuid())
+//   requestId String?  @unique
+//   userId    String
+//   timestamp DateTime @default(now())
+
+//   request   Request  @relation(fields: [requestId], references: [id])
+//   user      User     @relation(fields: [userId], references: [id])
+// }
+
 model Request {
   id           String     @id @default(cuid())
-  title         String?
+  title        String?
   url          String
   method       HttpMethod
   headers      Json?
@@ -35,34 +75,31 @@ model Request {
   userId       String
   createdAt    DateTime   @default(now())
 
-  user       User        @relation(fields: [userId], references: [id])
-  response    Response?  @relation(fields: [responseId], references: [id])
-  responseId  String?    @unique
-
-  history     History?   @relation(fields: [historyId], references: [id])
-  historyId   String?    @unique
+  user        User       @relation(fields: [userId], references: [id])
+  response    Response?
+  history     History?   // One-to-one relationship
 }
 
 model Response {
-  id        String   @id @default(cuid())
-  body      Json?
-  status    Int
+  id         String   @id @default(cuid())
+  body       Json?
+  status     Int
   statusText String?
-  headers   Json?
-  requestId String
-  createdAt DateTime @default(now())
+  headers    Json?
+  requestId  String   @unique
+  createdAt  DateTime @default(now())
 
-  request    Request?
+  request    Request  @relation(fields: [requestId], references: [id])
 }
 
 model History {
   id        String   @id @default(cuid())
-  requestId String?
+  requestId String   @unique  
   userId    String
   timestamp DateTime @default(now())
 
-  request    Request?
-  user    User     @relation(fields: [userId], references: [id])
+  request   Request  @relation(fields: [requestId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 enum HttpMethod {

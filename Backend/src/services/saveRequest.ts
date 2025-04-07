@@ -44,13 +44,6 @@ export const saveRequest = async (userId: string, data: RequestData, responseDat
           headers: responseData.headers || {},
         },
       });
-
-      await prisma.request.update({
-        where: { id: request.id },
-        data: {
-          responseId: response.id,
-        },
-      })
     }
     await prisma.history.create({
       data: {
