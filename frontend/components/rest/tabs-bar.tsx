@@ -28,8 +28,6 @@ const TabsBar = () => {
         initResponse(activeTabId);
       }
     }
-
-    console.log("tabs are ", tabs);
   }, [activeTabId, tabs, initRequest, initResponse, requests, responses]);
 
   return (

@@ -20,49 +20,39 @@ model User {
   password  String
   createdAt DateTime @default(now())
 
-  collections Collection[]
   requests    Request[]
   histories   History[]
 }
 
-model Collection {
-  id        String   @id @default(cuid())
-  name      String
-  userId    String
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id])
-
-  requests Request[]
-}
-
 model Request {
   id           String     @id @default(cuid())
-  name         String?
+  title         String?
   url          String
   method       HttpMethod
   headers      Json?
+  params       Json?
   body         Json?
   userId       String
-  collectionId String?
-  description  String?
   createdAt    DateTime   @default(now())
 
-  collection Collection? @relation(fields: [collectionId], references: [id])
   user       User        @relation(fields: [userId], references: [id])
-  response   Response[]
-  histories  History[]
+  response    Response?  @relation(fields: [responseId], references: [id])
+  responseId  String?    @unique
+
+  history     History?   @relation(fields: [historyId], references: [id])
+  historyId   String?    @unique
 }
 
 model Response {
   id        String   @id @default(cuid())
   body      Json?
   status    Int
+  statusText String?
   headers   Json?
   requestId String
   createdAt DateTime @default(now())
 
-  request Request @relation(fields: [requestId], references: [id])
+  request    Request?
 }
 
 model History {
@@ -71,7 +61,7 @@ model History {
   userId    String
   timestamp DateTime @default(now())
 
-  request Request? @relation(fields: [requestId], references: [id])
+  request    Request?
   user    User     @relation(fields: [userId], references: [id])
 }
 

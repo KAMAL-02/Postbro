@@ -33,10 +33,10 @@ export default function RootLayout({
         className={`${inter.className} ${jetbrainsMono.variable} h-screen flex flex-col`}
       >
         <Navbar />
-        <div className="flex-1 flex overflow-hidden max-w-screen">
+        <div className="flex overflow-hidden max-w-screen">
           <SidebarProvider>
             <AppSidebar />
-            <main className="flex-1 max-w-lvw">{children}</main>
+            <main className="flex-1 min-w-0 overflow-hidden">{children}</main>
             <Toaster
               toastOptions={{
                 className: "invert",

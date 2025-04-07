@@ -31,7 +31,7 @@ const Rest = () => {
   }
 
   return (
-    <div className="h-screen max-h-screen">
+    <div className="h-screen max-h-screen flex flex-col">
       {/* <div className="flex-1"> */}
       <TabsBar />
       <div className="h-full flex-1">
