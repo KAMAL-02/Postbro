@@ -18,22 +18,19 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import axios from "axios";
 import { Eye, EyeOff, LogOut } from "lucide-react";
+import { useAuthStore } from "@/utils/store/authStore";
 
 const AuthDialog = () => {
   const [open, setOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, setIsLoggedIn } = useAuthStore();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -56,7 +53,7 @@ const AuthDialog = () => {
   }, []);
 
   const handleAuth = async () => {
-    const endpoint = isLogin ? `${BASE_URL}/login` : `${BASE_URL}/signup`;
+    const endpoint = isLogin ? `${BASE_URL}/auth/login` : `${BASE_URL}/auth/signup`;
 
     try {
       const { data } = await axios.post(
@@ -87,7 +84,7 @@ const AuthDialog = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
+      await axios.post(`${BASE_URL}/auth/logout`, {}, { withCredentials: true });
       toast.success("Logged out successfully");
       setIsLoggedIn(false);
     } catch (err) {

@@ -6,6 +6,7 @@ import { Dropdown } from "primereact/dropdown";
 import { useRequestStore } from "@/utils/store/requestStore";
 import { useResponseStore } from "@/utils/store/responseStore";
 import { useTabStore } from "@/utils/store/tabStore";
+import { useAuthStore } from "@/utils/store/authStore";
 import { useEffect } from "react";
 import axios from "axios";
 
@@ -14,16 +15,7 @@ interface RequestInputsProps {
 }
 
 const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
-  // const { params, body, headers, method, url, setMethod, setUrl, setLoading } =
-  //   useRequestStore();
-  // const {
-  //   setResponse,
-  //   setStatus,
-  //   setStatusText,
-  //   setHeaders,
-  //   setTimeTaken,
-  //   setSize,
-  // } = useResponseStore();
+
 
   const requestData = useRequestStore((state) => state.requests[tabId]);
   const setMethod = useRequestStore((state) => state.setMethod);
@@ -31,7 +23,8 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
   const setLoading = useRequestStore((state) => state.setLoading);
   const initRequest = useRequestStore((state) => state.initRequest);
   const { setResponse, setStatus, setStatusText, setHeaders, setTimeTaken, setSize } = useResponseStore();
-  const { updateTabMethod, updateTabTitle } = useTabStore();
+  const { updateTabMethod, tabs, activeTabId } = useTabStore();
+  const { isLoggedIn } = useAuthStore();
 
   useEffect(() => {
     if (tabId && !requestData) {
@@ -44,7 +37,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
   
   const { method, url, params, headers, body, loading } = requestData;
   
-  // const { method, url, params, headers, body, loading } = requestData;
+  const title = tabs.find((tab) => tab.id === tabId)?.title || "Untitled";
 
   const options = [
     { label: "GET", value: "GET" },
@@ -72,7 +65,6 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
   };
   
   const handleUrlChange = (value: string) => {
-    console.log("value is", value);
     setUrl(tabId, value);
   };
 
@@ -80,15 +72,23 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
     setLoading(tabId, true);
     setResponse(tabId, null);
 
-    const requestConfig: any = {
-      method,
-      url,
-      timeout: 10000,
+    const payload: any = {
+      metadata: {
+        title,
+      },
+      requestConfig: {
+        method,
+        url,
+        timeout: 10000,
+      },
     };
 
+    const axiosConfig: any = {
+      ...(isLoggedIn && { withCredentials: true }),
+    }
+  
     if (params && params.length > 0) {
-      // Filter out params that do not have both key and value
-      requestConfig.params = params.reduce(
+      payload.requestConfig.params = params.reduce(
         (acc: any, param: { key: string; value: string }) => {
           if (param.key && param.value) {
             acc[param.key] = param.value;
@@ -98,13 +98,11 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
         {}
       );
     }
-
+  
     if (headers && headers.length > 0) {
-      // Filter out headers that do not have both key and value
-      requestConfig.headers = headers.reduce(
+      payload.requestConfig.headers = headers.reduce(
         (acc: any, header: { key: string; value: string }) => {
           if (header.key && header.value) {
-            // Only add if both key and value exist
             acc[header.key] = header.value;
           }
           return acc;
@@ -112,18 +110,20 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
         {}
       );
     }
-
+  
     if (["POST", "PUT", "PATCH"].includes(method.toUpperCase())) {
-      requestConfig.data = body;
+      payload.requestConfig.data = body;
     }
 
-    console.log("Request Config is", requestConfig);
-
-    const startTime = performance.now(); // Start time for performance measurement
+    console.log("Payload is", payload);
+    console.log("Axios config is", axiosConfig);
+    
+    const startTime = performance.now();
     try {
       const res = await axios.post(
         "http://localhost:5000/api/request",
-        requestConfig
+        payload,
+        axiosConfig
       );
 
       const endTime = performance.now();
