@@ -68,6 +68,7 @@ interface ResponseState {
   
   // Initialize a new response for a tab
   initResponse: (tabId: string) => void;
+  initHistoryResponse: (tabId: string, history: any) => void;
 }
 
 const defaultResponseData: ResponseData = {
@@ -86,6 +87,20 @@ export const useResponseStore = create<ResponseState>((set) => ({
     responses: {
       ...state.responses,
       [tabId]: { ...defaultResponseData }
+    }
+  })),
+
+  initHistoryResponse: (tabId, history ) => set((state) => ({
+    responses: {
+      ...state.responses,
+      [tabId]: {
+        ...defaultResponseData,
+        response: history.request.response.body,
+        status: history.request.response.status,
+        statusText: history.request.response.statusText,
+        timeTaken: history.request.response.timeTaken,
+        size: history.request.response.size,
+      }
     }
   })),
   

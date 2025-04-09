@@ -16,6 +16,8 @@ interface ResponseData {
   status: number;
   statusText?: string;
   headers?: any;
+  timeTaken?: number;
+  size?: string;
 }
 
 export const saveRequest = async (userId: string, data: RequestData, responseData?: ResponseData) => {
@@ -42,6 +44,8 @@ export const saveRequest = async (userId: string, data: RequestData, responseDat
           status: responseData.status,
           statusText: responseData.statusText || "",
           headers: responseData.headers || {},
+          timeTaken: responseData.timeTaken || 0,
+          size: responseData.size || "",
         },
       });
     }

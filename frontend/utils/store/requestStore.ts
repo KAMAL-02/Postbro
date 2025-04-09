@@ -57,6 +57,7 @@ interface RequestState {
     
     // Initialize a new request for a tab
     initRequest: (tabId: string) => void;
+    initHistoryRequest: (tabId: string, history: any) => void;
   }
 
   const defaultRequestData: RequestData = {
@@ -76,6 +77,18 @@ export const useRequestStore = create<RequestState>((set) => ({
       requests: {
         ...state.requests,
         [tabId]: { ...defaultRequestData }
+      }
+    })),
+
+    initHistoryRequest: (tabId, history) => set((state) => ({
+      requests: {
+        ...state.requests,
+        [tabId]: {
+          ...state.requests[tabId] || defaultRequestData,
+          method: history.request.method,
+          url: history.request.url,
+          title: history.request.title,
+        }
       }
     })),
     

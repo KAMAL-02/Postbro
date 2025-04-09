@@ -88,6 +88,8 @@ model Response {
   headers    Json?
   requestId  String   @unique
   createdAt  DateTime @default(now())
+  timeTaken  Int?      
+  size       String?
 
   request    Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
 }
