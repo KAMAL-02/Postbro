@@ -89,7 +89,7 @@ model Response {
   requestId  String   @unique
   createdAt  DateTime @default(now())
 
-  request    Request  @relation(fields: [requestId], references: [id])
+  request    Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
 }
 
 model History {
@@ -98,7 +98,7 @@ model History {
   userId    String
   timestamp DateTime @default(now())
 
-  request   Request  @relation(fields: [requestId], references: [id])
+  request   Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id])
 }
 

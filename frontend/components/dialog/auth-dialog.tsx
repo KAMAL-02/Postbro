@@ -24,11 +24,13 @@ import { toast } from "sonner";
 import axios from "axios";
 import { Eye, EyeOff, LogOut } from "lucide-react";
 import { useAuthStore } from "@/utils/store/authStore";
+import { ClipLoader } from "react-spinners";
 
 const AuthDialog = () => {
   const [open, setOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   // const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { isLoggedIn, setIsLoggedIn } = useAuthStore();
 
@@ -53,9 +55,12 @@ const AuthDialog = () => {
   }, []);
 
   const handleAuth = async () => {
-    const endpoint = isLogin ? `${BASE_URL}/auth/login` : `${BASE_URL}/auth/signup`;
+    const endpoint = isLogin
+      ? `${BASE_URL}/auth/login`
+      : `${BASE_URL}/auth/signup`;
 
     try {
+      setIsLoading(true);
       const { data } = await axios.post(
         endpoint,
         {
@@ -79,12 +84,18 @@ const AuthDialog = () => {
     } catch (error: any) {
       console.error("Error:", error.response?.data?.error || error.error);
       toast.error(error.response?.data?.error || "An error occurred");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleLogout = async () => {
     try {
-      await axios.post(`${BASE_URL}/auth/logout`, {}, { withCredentials: true });
+      await axios.post(
+        `${BASE_URL}/auth/logout`,
+        {},
+        { withCredentials: true }
+      );
       toast.success("Logged out successfully");
       setIsLoggedIn(false);
     } catch (err) {
@@ -173,12 +184,27 @@ const AuthDialog = () => {
             </button>
           </div>
 
-          <Button
+          {/* <Button
             onClick={handleAuth}
             className="w-full text-sm bg-[#df894c] text-black hover:bg-[#df894c] cursor-pointer font-semibold"
           >
             {isLogin ? "Login" : "Sign Up"}
-          </Button>
+          </Button> */}
+          {isLoading ? (
+            <Button
+              disabled
+              className="w-full text-sm bg-[#df894c] text-black hover:bg-[#df894c] cursor-not-allowed font-semibold flex items-center justify-center h-10"
+            >
+              <ClipLoader color="#121212" size={20} />
+            </Button>
+          ) : (
+            <Button
+              onClick={handleAuth}
+              className="w-full text-sm bg-[#df894c] text-black hover:bg-[#df894c] cursor-pointer font-semibold"
+            >
+              {isLogin ? "Login" : "Sign Up"}
+            </Button>
+          )}
         </div>
 
         <p className="text-sm text-gray-400 text-center mt-4">

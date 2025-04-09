@@ -8,6 +8,8 @@ import { useResponseStore } from "@/utils/store/responseStore";
 import { useTabStore } from "@/utils/store/tabStore";
 import { useAuthStore } from "@/utils/store/authStore";
 import { useEffect } from "react";
+import { fetchHistory } from "@/utils/history";
+import { useHistoryStore } from "@/utils/store/historyStore";
 import axios from "axios";
 
 interface RequestInputsProps {
@@ -25,6 +27,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
   const { setResponse, setStatus, setStatusText, setHeaders, setTimeTaken, setSize } = useResponseStore();
   const { updateTabMethod, tabs, activeTabId } = useTabStore();
   const { isLoggedIn } = useAuthStore();
+  const { setHistory } = useHistoryStore();
 
   useEffect(() => {
     if (tabId && !requestData) {
@@ -139,11 +142,15 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
 
       if (res.status === 200) {
         setResponse(tabId, res.data);
+        const parsed = await fetchHistory(); // Fetch history after a successful request
+        setHistory(parsed);
       } else {
         console.error("Error in response:", res);
         setResponse(tabId, res.data);
         setStatusText(tabId, res.statusText);
         setStatus(tabId, res.status);
+        const parsed = await fetchHistory(); // Fetch history even if the request fails
+        setHistory(parsed);
       }
     } catch (error: any) {
       const endTime = performance.now();
@@ -157,6 +164,8 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
       setResponse(tabId, error.response.data.data);
       setStatusText(tabId, error.response.statusText);
       setStatus(tabId, error.response.status);
+      const parsed = await fetchHistory(); // Fetch history even if the request fails
+      setHistory(parsed);
     } finally {
       setLoading(tabId, false);
     }
