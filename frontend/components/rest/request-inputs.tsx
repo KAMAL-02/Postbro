@@ -65,6 +65,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
   const handleMethodChange = (value: string) => {
     setMethod(tabId, value);
     updateTabMethod(tabId, value);
+    console.log("body is", body);
   };
   
   const handleUrlChange = (value: string) => {
@@ -113,9 +114,17 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
         {}
       );
     }
-  
+
+    let parsedBody = body;
+
+    try {
+      parsedBody = JSON.parse(body);
+    } catch (e) {
+      console.warn("Body is not valid JSON string");
+    }
+
     if (["POST", "PUT", "PATCH"].includes(method.toUpperCase())) {
-      payload.requestConfig.data = body;
+      payload.requestConfig.body = parsedBody;
     }
 
     console.log("Payload is", payload);
@@ -145,7 +154,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
         const parsed = await fetchHistory(); // Fetch history after a successful request
         setHistory(parsed);
       } else {
-        console.error("Error in response:", res);
+        console.log("response status not 200:", res);
         setResponse(tabId, res.data);
         setStatusText(tabId, res.statusText);
         setStatus(tabId, res.status);

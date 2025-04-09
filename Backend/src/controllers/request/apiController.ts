@@ -25,7 +25,7 @@ const sendApiRequest = async (req: Request, res: Response) => {
     return;
   }
 
-  const { method, url, params, headers, bodyData } = requestConfig;
+  const { method, url, params, headers, body } = requestConfig;
   if (!url || !method) {
     res.status(400).json({ message: "All fields are required" });
     return;
@@ -40,17 +40,16 @@ const sendApiRequest = async (req: Request, res: Response) => {
   }
 
   if (["POST", "PUT", "PATCH"].includes(method.toUpperCase())) {
-    reqApiConfig.data = bodyData || {};
+    reqApiConfig.data = body || {};
   }
 
   const startTime = performance.now();
   try {
-
+    console.log("Request config is: ", reqApiConfig);
     const response = await axios(reqApiConfig);
     const endTime = performance.now();
     const timeTaken = Math.round(endTime - startTime); // Calculate time taken in milliseconds
     const size = getSize(response.data); // Get the size of the response data
-    console.log("Response is: ", response);
 
     if(user){
       const { history } = await saveRequest(user.id, {
@@ -58,7 +57,7 @@ const sendApiRequest = async (req: Request, res: Response) => {
         url,
         params,
         headers,
-        body: bodyData,
+        body: body,
         title: metadata?.title || "Untitled",
       }, {
         body: response.data,

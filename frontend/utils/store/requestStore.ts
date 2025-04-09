@@ -80,17 +80,21 @@ export const useRequestStore = create<RequestState>((set) => ({
       }
     })),
 
-    initHistoryRequest: (tabId, history) => set((state) => ({
-      requests: {
-        ...state.requests,
-        [tabId]: {
-          ...state.requests[tabId] || defaultRequestData,
-          method: history.request.method,
-          url: history.request.url,
-          title: history.request.title,
+    initHistoryRequest: (tabId, history) => set((state) => {
+      const stringifiedBody = JSON.stringify(history.request.body, null, 2);
+      return {
+        requests: {
+          ...state.requests,
+          [tabId]: {
+            ...state.requests[tabId] || defaultRequestData,
+            method: history.request.method,
+            url: history.request.url,
+            title: history.request.title,
+            body: stringifiedBody,
+          }
         }
-      }
-    })),
+      };
+    }),
     
     setMethod: (tabId, method) => set((state) => ({
       requests: {
@@ -142,15 +146,19 @@ export const useRequestStore = create<RequestState>((set) => ({
       }
     })),
     
-    setBody: (tabId, body) => set((state) => ({
-      requests: {
-        ...state.requests,
-        [tabId]: {
-          ...state.requests[tabId] || defaultRequestData,
-          body
-        }
-      }
-    })),
+    setBody: (tabId, body) =>
+      set((state) => {
+        console.log("setBody", body);
+        return {
+          requests: {
+            ...state.requests,
+            [tabId]: {
+              ...(state.requests[tabId] || defaultRequestData),
+              body,
+            },
+          },
+        };
+      }),
     
     setLoading: (tabId, loading) => set((state) => ({
       requests: {

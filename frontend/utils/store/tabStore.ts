@@ -89,10 +89,12 @@ export const useTabStore = create<TabState>((set) => ({
   
     set((state) => {
       const newTabId = uuidv4();
+      const stringifiedBody = JSON.stringify(history.request.body, null, 2);
       const newTab = {
         id: newTabId,
         title: history.request.title,
         method: history.request.method,
+        body: stringifiedBody,
       };
   
       const updatedTabs = [...state.tabs, newTab];
