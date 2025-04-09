@@ -32,6 +32,7 @@ const Rest = () => {
           width={4}
           margin={1}
           radius={0}
+          speedMultiplier={3}
         />
       </div>
     );

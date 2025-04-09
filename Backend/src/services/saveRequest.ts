@@ -45,13 +45,13 @@ export const saveRequest = async (userId: string, data: RequestData, responseDat
         },
       });
     }
-    await prisma.history.create({
+    const history = await prisma.history.create({
       data: {
         userId,
         requestId: request.id,
       },
     });
-    return { request, response };
+    return { request, response, history };
   } catch (error) {
     console.error("Error saving request:", error);
     throw new Error("Failed to save request");

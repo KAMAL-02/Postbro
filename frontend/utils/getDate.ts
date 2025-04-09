@@ -1,5 +1,4 @@
 export function getDateLabel(timestamp: string) {
-    console.log("Timestamp: ", timestamp);
     const date = new Date(timestamp);
     const today = new Date();
     const yesterday = new Date();
