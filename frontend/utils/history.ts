@@ -22,6 +22,6 @@ export const fetchHistory = async () => {
     // setRequestHistory(parsed);
     return parsed;
   } catch (error) {
-    console.error("Error fetching history:", error);
+    console.log("Error fetching history:", error);
   }
 };

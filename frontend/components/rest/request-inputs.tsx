@@ -181,12 +181,12 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
   };
 
   return (
-    <div className="flex w-full items-center gap-3 p-3 rounded-lg shadow-md">
+    <div className="flex w-full items-center gap-2 p-2">
       <Dropdown
         options={options}
         value={method}
         onChange={(e) => handleMethodChange(e.target.value)}
-        className={`w-28 border border-gray-600 bg-[#282828] p-2 rounded-md text-xs font-medium ${
+        className={`w-24 h-8 border border-gray-600 bg-[#121212] p-2 rounded-xs text-xs font-medium ${
           method === "GET"
             ? "text-green-400"
             : method === "POST"
@@ -216,10 +216,10 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
 
       <Input
         type="text"
-        placeholder="Enter a URL or paste a CURL command"
+        placeholder="Enter URL"
         onChange={(e) => handleUrlChange(e.target.value)}
         value={url}
-        className="flex-1 border border-gray-600 bg-[#282828] text-white p-2 rounded-md"
+        className="flex-1 border border-gray-600 bg-[#121212] rounded-xs text-white p-2 h-8"
         style={{ fontFamily: "var(--font-jetbrains-mono)" }}
       />
 

@@ -63,13 +63,14 @@ export function HistorySidebar() {
   };
 
   useEffect(() => {
+    console.log("1")
     const fetchHistoryHere = async () => {
       const parsed = await fetchHistory();
       setHistory(parsed);
     };
 
     fetchHistoryHere();
-  }, []);
+  }, [isLoggedIn]);
 
   const groupedHistory: { [key: string]: RequestItem[] } = {};
 
@@ -222,7 +223,7 @@ export function HistorySidebar() {
                     );
                   })}
                   {Object.keys(groupedHistory).length === 0 && (
-                    <p className="text-sm text-zinc-400">No history found</p>
+                    <p className="ext-sm text-zinc-400 text-center mt-10">No history found</p>
                   )}
                 </>
               )}
