@@ -186,7 +186,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
         options={options}
         value={method}
         onChange={(e) => handleMethodChange(e.target.value)}
-        className={`w-24 h-8 border border-gray-600 bg-[#121212] p-2 rounded-xs text-xs font-medium ${
+        className={`w-24 h-8 border border-zinc-800 bg-[#121212] p-2 rounded-xs text-xs font-medium ${
           method === "GET"
             ? "text-green-400"
             : method === "POST"
@@ -219,7 +219,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
         placeholder="Enter URL"
         onChange={(e) => handleUrlChange(e.target.value)}
         value={url}
-        className="flex-1 border border-gray-600 bg-[#121212] rounded-xs text-white p-2 h-8"
+        className="flex-1 border border-zinc-800 bg-[#121212] rounded-xs text-white p-2 h-8"
         style={{ fontFamily: "var(--font-jetbrains-mono)" }}
       />
 

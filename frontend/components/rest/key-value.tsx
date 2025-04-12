@@ -63,7 +63,7 @@ const KeyValueInput = ({ type, tabId }: KeyValueListProps) => {
               placeholder="Key"
               value={item.key}
               onChange={(e) => handleInputChange(index, "key", e.target.value)}
-              className="border border-gray-600 bg-[#121212] text-white p-2 rounded-xs h-8"
+              className="border-1 border-zinc-700 bg-[#121212] text-white p-2 rounded-xs h-8"
               style={{ fontFamily: "var(--font-jetbrains-mono)" }}
             />
             <Input
@@ -71,7 +71,7 @@ const KeyValueInput = ({ type, tabId }: KeyValueListProps) => {
               placeholder="Value"
               value={item.value}
               onChange={(e) => handleInputChange(index, "value", e.target.value)}
-              className="border border-gray-600 bg-[#121212] text-white p-2 rounded-xs h-8"
+              className="border-1 border-zinc-700 bg-[#121212] text-white p-2 rounded-xs h-8"
               style={{ fontFamily: "var(--font-jetbrains-mono)" }}
             />
             <Tooltip>

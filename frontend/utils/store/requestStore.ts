@@ -65,7 +65,7 @@ interface RequestState {
     url: "",
     activeTab: "body",
     params: [{ key: "", value: "" }],
-    headers: [{ key: "", value: "" }],
+    headers: [{ key: "content-type", value: "application/json" }],
     body: "",
     loading: false,
   };
@@ -91,6 +91,10 @@ export const useRequestStore = create<RequestState>((set) => ({
             url: history.request.url,
             title: history.request.title,
             body: stringifiedBody,
+            // headers: history.request.headers.map((header: any) => ({
+            //   key: header.key,
+            //   value: header.value,
+            // })),
           }
         }
       };

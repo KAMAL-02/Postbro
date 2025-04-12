@@ -26,7 +26,7 @@ const RequestTabs: React.FC<RequestTabsProps> = ({tabId}) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex space-x-3 border-b border-gray-600">
+      <div className="flex space-x-3 border-b border-zinc-800">
         {["parameters", "body", "headers"].map((tab) => (
           <button
             key={tab}
