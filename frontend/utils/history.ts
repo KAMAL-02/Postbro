@@ -10,7 +10,6 @@ export const fetchHistory = async () => {
       withCredentials: true,
     });
     const data = res.data;
-    console.log("History data:", data);
     const parsed = data.map((item: any) => ({
       id: item.id,
       method: item.request?.method || "GET",
@@ -22,6 +21,5 @@ export const fetchHistory = async () => {
     // setRequestHistory(parsed);
     return parsed;
   } catch (error) {
-    console.log("Error fetching history:", error);
   }
 };

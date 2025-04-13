@@ -71,7 +71,6 @@ const RequestInputs: React.FC<RequestInputsProps> = ({ tabId }) => {
   const handleMethodChange = (value: string) => {
     setMethod(tabId, value);
     updateTabMethod(tabId, value);
-    console.log("body is", body);
   };
 
   const handleUrlChange = (value: string) => {
@@ -145,9 +144,6 @@ const RequestInputs: React.FC<RequestInputsProps> = ({ tabId }) => {
       payload.requestConfig.body = requestBody;
     }
 
-    console.log("Payload is", payload);
-    console.log("Axios config is", axiosConfig);
-
     const startTime = performance.now();
     try {
       const res = await axios.post(
@@ -158,7 +154,6 @@ const RequestInputs: React.FC<RequestInputsProps> = ({ tabId }) => {
 
       const endTime = performance.now();
       const timeTaken = Math.round(endTime - startTime); // Calculate time taken in milliseconds
-      console.log("Response is", res);
       setStatus(tabId, res.status);
       setStatusText(tabId, res.statusText);
       setTimeTaken(tabId, timeTaken);
@@ -173,7 +168,6 @@ const RequestInputs: React.FC<RequestInputsProps> = ({ tabId }) => {
         const parsed = await fetchHistory(); // Fetch history after a successful request
         setHistory(parsed);
       } else {
-        console.log("response status not 200:", res);
         setResponse(tabId, res.data);
         setStatusText(tabId, res.statusText);
         setStatus(tabId, res.status);

@@ -18,9 +18,7 @@ type HistoryState = {
 export const useHistoryStore = create<HistoryState>((set) => ({
   history: [],
   setHistory: (history) => {
-    console.log("Setting history:", history);
     set({ history })
-    console.log("History set to:", history);
   },
   addToHistory: (item) =>
     set((state) => ({

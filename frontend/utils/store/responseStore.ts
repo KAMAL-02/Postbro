@@ -106,7 +106,6 @@ export const useResponseStore = create<ResponseState>((set) => ({
   })),
   
   setResponse: (tabId, response) => set((state) => {
-    console.log(`Response set for tab ${tabId}:`, response);
     return {
       responses: {
         ...state.responses,

@@ -7,8 +7,6 @@ import { getSize } from "../../utils/getSize";
 import { performance } from "perf_hooks";
 
 const sendApiRequest = async (req: Request, res: Response) => {
-  console.log("Request body is: ", req.body);
-  console.log("req.user is: ", req.user);
   const user = req.user as any;
 
   const { metadata, requestConfig } = req.body;
@@ -16,7 +14,6 @@ const sendApiRequest = async (req: Request, res: Response) => {
   const schemaValidation = apiSchema.safeParse(requestConfig);
 
   if (!schemaValidation.success) {
-    console.log("Validation failed: ", schemaValidation.error.flatten().fieldErrors);
 
     res.status(400).json({
       message: "Validation failed",
@@ -45,7 +42,6 @@ const sendApiRequest = async (req: Request, res: Response) => {
 
   const startTime = performance.now();
   try {
-    console.log("Request config is: ", reqApiConfig);
     const response = await axios(reqApiConfig);
     const endTime = performance.now();
     const timeTaken = Math.round(endTime - startTime); // Calculate time taken in milliseconds
