@@ -35,7 +35,6 @@ const signup = async ( req: Request, res: Response ) => {
 }
 
 const login = async ( req: Request, res: Response ) => {
-    console.log("Login request received", req.body);
     const { email, password } = req.body;
     if( !email || !password ) {
         res.status(400).json({ message: "All fields are required." });

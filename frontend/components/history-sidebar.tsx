@@ -88,7 +88,6 @@ export function HistorySidebar() {
   });
 
   const toggleGroup = (label: string) => {
-    // console.log("request history", requestHistory);
     setOpenGroups((prev) => ({
       ...prev,
       [label]: !prev[label],
@@ -116,9 +115,7 @@ export function HistorySidebar() {
   };
 
   const handleHistoryClick = (historyId: string) => {
-    console.log("history", historyId)
     const historyItem = history.find((item) => item.id === historyId);
-    console.log("historyItem", historyItem)
     if (historyItem) {
       addTabFromHistory(historyItem);
     }else{

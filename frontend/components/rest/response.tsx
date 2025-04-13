@@ -53,7 +53,6 @@ const ResponseSection = ({ tabId }: ResponseSectionProps) => {
   const isSuccess = status >= 200 && status < 300;
 
   const handleCopy = async () => {
-    console.log(" is", headers);
     try {
       if(activeTab === "headers") {
         await navigator.clipboard.writeText(JSON.stringify(headers, null, 2));

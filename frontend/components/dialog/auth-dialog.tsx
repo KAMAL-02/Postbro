@@ -71,7 +71,6 @@ const AuthDialog = () => {
         { withCredentials: true }
       );
 
-      console.log("Success:", data);
       toast.success(data.message || "Success!");
       if (!isLogin) {
         toast.success("Account created! Please log in.");

@@ -163,7 +163,6 @@ export const useRequestStore = create<RequestState>((set) => ({
     
     setBody: (tabId, body) =>
       set((state) => {
-        console.log("setBody", body);
         return {
           requests: {
             ...state.requests,
