@@ -1,7 +1,6 @@
 "use client";
 
 import { useRequestStore } from "@/utils/store/requestStore";
-import { useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { json } from "@codemirror/lang-json";
 import { dracula } from "@uiw/codemirror-theme-dracula";
@@ -16,14 +15,12 @@ interface BodyInputProps {
 }
 
 const BodyInput = ({ tabId }: BodyInputProps) => {
-  const { requests, setBody } = useRequestStore();
+  const { requests, setBody, setHasTyped } = useRequestStore();
   const requestData = requests[tabId] || { body: "" };
-  const { body } = requestData;
-
-  const [hasTyped, setHasTyped] = useState(false);
+  const { body, hasTyped } = requestData;
 
   const handleChange = (value: string) => {
-    if (!hasTyped) setHasTyped(true);
+    if (!hasTyped) setHasTyped(tabId, true);
     setBody(tabId, value);
   };
 

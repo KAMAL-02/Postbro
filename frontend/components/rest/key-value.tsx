@@ -36,6 +36,7 @@ const KeyValueInput = ({ type, tabId }: KeyValueListProps) => {
   };
 
   const addRow = () => {
+    console.log("requestData", requests);
     setData([...data, { key: "", value: "" }]);
   };
 

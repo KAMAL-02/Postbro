@@ -63,7 +63,6 @@ export function HistorySidebar() {
   };
 
   useEffect(() => {
-    console.log("1")
     const fetchHistoryHere = async () => {
       const parsed = await fetchHistory();
       setHistory(parsed);

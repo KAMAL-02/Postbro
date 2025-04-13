@@ -72,7 +72,6 @@ const ResponseSection = ({tabId}: ResponseSectionProps) => {
   };
 
   useEffect(() => {
-    console.log("response updated to:", response);
 
     if (typeof response === "object" && response !== null) {
       setFormattedResponse(JSON.stringify(response, null, 2));
