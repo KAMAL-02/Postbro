@@ -10,6 +10,7 @@ import { useAuthStore } from "@/utils/store/authStore";
 import { useEffect } from "react";
 import { fetchHistory } from "@/utils/history";
 import { useHistoryStore } from "@/utils/store/historyStore";
+import { toast } from "sonner";
 import axios from "axios";
 
 interface RequestInputsProps {
@@ -26,7 +27,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({ tabId }) => {
     setResponse,
     setStatus,
     setStatusText,
-    setHeaders,
+    setResponseHeaders,
     setTimeTaken,
     setSize,
   } = useResponseStore();
@@ -80,6 +81,14 @@ const RequestInputs: React.FC<RequestInputsProps> = ({ tabId }) => {
   const handleSendRequest = async () => {
     setLoading(tabId, true);
     setResponse(tabId, null);
+
+    if(!url){
+      toast.error("url is required", {
+        position: "bottom-center",
+      });
+      setLoading(tabId, false);
+      return;
+    }
 
     const payload: any = {
       metadata: {
@@ -153,6 +162,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({ tabId }) => {
       setStatus(tabId, res.status);
       setStatusText(tabId, res.statusText);
       setTimeTaken(tabId, timeTaken);
+      setResponseHeaders(tabId, res.headers);
 
       const size = getResponseSize(res.data);
       const formattedSize = formatBytes(size);
@@ -167,6 +177,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({ tabId }) => {
         setResponse(tabId, res.data);
         setStatusText(tabId, res.statusText);
         setStatus(tabId, res.status);
+        setResponseHeaders(tabId, res.headers);
         const parsed = await fetchHistory(); // Fetch history even if the request fails
         setHistory(parsed);
       }
@@ -182,6 +193,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({ tabId }) => {
       setResponse(tabId, error.response.data.data);
       setStatusText(tabId, error.response.statusText);
       setStatus(tabId, error.response.status);
+      setResponseHeaders(tabId, error.response.headers);
       const parsed = await fetchHistory(); // Fetch history even if the request fails
       setHistory(parsed);
     } finally {

@@ -62,7 +62,7 @@ interface ResponseState {
   setResponse: (tabId: string, response: any) => void;
   setStatus: (tabId: string, status: number) => void;
   setStatusText: (tabId: string, statusText: string) => void;
-  setHeaders: (tabId: string, headers: any) => void;
+  setResponseHeaders: (tabId: string, headers: any) => void;
   setTimeTaken: (tabId: string, timeTaken: number) => void;
   setSize: (tabId: string, size: string) => void;
   
@@ -100,6 +100,7 @@ export const useResponseStore = create<ResponseState>((set) => ({
         statusText: history.request.response.statusText,
         timeTaken: history.request.response.timeTaken,
         size: history.request.response.size,
+        headers: history.request.response.headers,
       }
     }
   })),
@@ -137,15 +138,21 @@ export const useResponseStore = create<ResponseState>((set) => ({
     }
   })),
   
-  setHeaders: (tabId, headers) => set((state) => ({
-    responses: {
-      ...state.responses,
-      [tabId]: {
-        ...state.responses[tabId] || defaultResponseData,
-        headers
-      }
-    }
-  })),
+  setResponseHeaders: (tabId, headers) => {
+    const plainHeaders = Object.fromEntries(
+      Object.entries(headers).filter(([_, val]) => typeof val !== "function")
+    );
+    set((state) => ({
+      responses: {
+        ...state.responses,
+        [tabId]: {
+          ...state.responses[tabId],
+          headers: plainHeaders,
+        },
+      },
+    }));
+  },
+  
   
   setTimeTaken: (tabId, timeTaken) => set((state) => ({
     responses: {
