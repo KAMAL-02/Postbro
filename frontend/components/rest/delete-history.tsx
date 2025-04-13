@@ -38,19 +38,12 @@ const DeleteHistory = () => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Tooltip>
-          <TooltipTrigger asChild>
             <button className="p-2 rounded cursor-pointer">
               <Trash2
                 className="text-white hover:text-red-500 transition-colors"
                 size={14}
               />
             </button>
-          </TooltipTrigger>
-          <TooltipContent side="top" align="center" className="text-[#df894c] text-sm">
-            <p>Delete History</p>
-          </TooltipContent>
-        </Tooltip>
       </AlertDialogTrigger>
       <AlertDialogContent className="bg-[#1e1e1e] border border-[#333] text-white">
         <AlertDialogHeader>

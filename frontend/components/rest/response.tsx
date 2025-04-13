@@ -10,6 +10,7 @@ import { EditorView } from "@codemirror/view";
 import { Copy, Check, ArrowDownToLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FadeLoader } from "react-spinners";
+import ResponseHeaders from "./response-headers";
 
 import {
   Tooltip,
@@ -21,7 +22,7 @@ interface ResponseSectionProps {
   tabId: any;
 }
 
-const ResponseSection = ({tabId}: ResponseSectionProps) => {
+const ResponseSection = ({ tabId }: ResponseSectionProps) => {
   // const { response, status, statusText, timeTaken, size } = useResponseStore();
   // const { loading } = useRequestStore();
 
@@ -34,23 +35,32 @@ const ResponseSection = ({tabId}: ResponseSectionProps) => {
     statusText: "",
     headers: {},
     timeTaken: 0,
-    size: ""
-  };
-  
-  const requestData = requests[tabId] || {
-    loading: false
+    size: "",
   };
 
-  const { response, status, statusText, timeTaken, size } = responseData;
+  const requestData = requests[tabId] || {
+    loading: false,
+  };
+
+  const { response, status, statusText, timeTaken, size, headers } =
+    responseData;
   const { loading } = requestData;
 
   const [formattedResponse, setFormattedResponse] = useState("");
   const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState<"body" | "headers">("body");
 
   const isSuccess = status >= 200 && status < 300;
 
   const handleCopy = async () => {
+    console.log(" is", headers);
     try {
+      if(activeTab === "headers") {
+        await navigator.clipboard.writeText(JSON.stringify(headers, null, 2));
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1000);
+        return;
+      }
       await navigator.clipboard.writeText(formattedResponse);
       setCopied(true);
       setTimeout(() => setCopied(false), 1000);
@@ -60,6 +70,19 @@ const ResponseSection = ({tabId}: ResponseSectionProps) => {
   };
 
   const handleDownload = () => {
+
+    if(activeTab === "headers") {
+      const blob = new Blob([JSON.stringify(headers, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "headers.json"; //TODO: make this dynamic based on the response type
+      a.click();
+
+      URL.revokeObjectURL(url);
+      return;
+    }
     const blob = new Blob([formattedResponse], { type: "application/json" });
     const url = URL.createObjectURL(blob);
 
@@ -72,7 +95,6 @@ const ResponseSection = ({tabId}: ResponseSectionProps) => {
   };
 
   useEffect(() => {
-
     if (typeof response === "object" && response !== null) {
       setFormattedResponse(JSON.stringify(response, null, 2));
     } else {
@@ -81,17 +103,14 @@ const ResponseSection = ({tabId}: ResponseSectionProps) => {
   }, [response]);
 
   return (
-    <div className="flex flex-col p-3 rounded bg-[#121212] h-full min-h-0">
-      <div className="flex justify-start items-center gap-3">
+    <div className="flex flex-col p-2 rounded bg-[#121212] h-full min-h-0">
+      <div className="flex flex-wrap justify-start items-center gap-4 mb-2">
         {response && (
-          <div className="flex justify-start items-center mb-2 gap-5 flex-wrap">
+          <>
             <p className="text-xs text-gray-300">
               Status:{" "}
               <span className={isSuccess ? "text-green-400" : "text-red-400"}>
-                {status} {" . "}
-              </span>
-              <span className={isSuccess ? "text-green-400" : "text-red-400"}>
-                {statusText}
+                {status} . {statusText}
               </span>
             </p>
             {timeTaken && (
@@ -100,80 +119,118 @@ const ResponseSection = ({tabId}: ResponseSectionProps) => {
                 <span className="text-blue-400">{timeTaken} ms</span>
               </p>
             )}
-
             {size && (
               <p className="text-xs text-gray-300">
                 Size: <span className="text-blue-400">{size}</span>
               </p>
             )}
-          </div>
+          </>
         )}
       </div>
 
-      <div className="flex items-center justify-between mb-2 border-b-1 border-gray-700 pb-2">
-        <p className="text-sm font-semibold text-gray-300">Response Body</p>
-        {response && (
-          <div className="flex items-center justify-end">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  onClick={handleCopy}
-                  size="sm"
-                  className="text-gray-300 cursor-pointer hover:text-white bg-transparent hover:bg-transparent"
-                >
-                  {copied ? (
-                    <Check className="w-4 h-4 mr-1" />
-                  ) : (
-                    <Copy className="w-4 h-4 mr-1" />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent
-                side="top"
-                align="center"
-                className="text-[#df894c] text-sm"
+      {/* Tabs */}
+      { response ? (
+        <div className="flex border-b items-center justify-between border-zinc-800 mb-2">
+        <div>
+          <button
+            onClick={() => setActiveTab("body")}
+            className={`px-4 py-2 text-xs cursor-pointer ${
+              activeTab === "body"
+                ? "border-b-2 border-orange-500 text-orange-400"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            Response
+          </button>
+          <button
+            onClick={() => setActiveTab("headers")}
+            className={`px-4 py-2 text-xs cursor-pointer ${
+              activeTab === "headers"
+                ? "border-b-2 border-orange-500 text-orange-400"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            Headers
+          </button>
+        </div>
+        <div className="">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={handleCopy}
+                size="sm"
+                className="text-gray-300 cursor-pointer hover:text-white bg-transparent hover:bg-transparent"
               >
-                Copy
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  onClick={handleDownload}
-                  size="sm"
-                  className="text-gray-300 cursor-pointer hover:text-white bg-transparent hover:bg-transparent"
-                >
-                  <ArrowDownToLine className="w-4 h-4 mr-1" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent
-                side="top"
-                align="center"
-                className="text-[#df894c] text-sm"
+                {copied ? (
+                  <Check className="w-4 h-4 mr-1" />
+                ) : (
+                  <Copy className="w-4 h-4 mr-1" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent
+              side="top"
+              align="center"
+              className="text-[#df894c] text-sm"
+            >
+              Copy
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={handleDownload}
+                size="sm"
+                className="text-gray-300 cursor-pointer hover:text-white bg-transparent hover:bg-transparent"
               >
-                Download
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        )}
+                <ArrowDownToLine className="w-4 h-4 mr-1" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent
+              side="top"
+              align="center"
+              className="text-[#df894c] text-sm"
+            >
+              Download
+            </TooltipContent>
+          </Tooltip>
+        </div>
       </div>
-      <div className="flex-1 overflow-auto max-w-full mb-5">
+      ) : (
+        <p className="text-sm font-semibold text-gray-300 border-b border-zinc-800 pb-2">Response Body</p>
+      )}
+
+      {/* Tab Content */}
+      <div className="flex-1 overflow-auto max-w-full mb-9">
         {loading ? (
           <div className="flex justify-center items-center h-full">
-            <FadeLoader color="#df894c" height={10} width={5} margin={0} radius={0} />
+            <FadeLoader
+              color="#df894c"
+              height={10}
+              width={5}
+              margin={0}
+              radius={0}
+            />
           </div>
         ) : (
-          response && (
-            <CodeMirror
-              value={formattedResponse}
-              height="100%"
-              style={{ maxHeight: "100%" }}
-              extensions={[json(), EditorView.lineWrapping]}
-              theme={dracula}
-              className="cm-editor h-screen overflow-auto"
-              readOnly
-            />
-          )
+          <>
+            {activeTab === "body" && response && (
+              <>
+                <CodeMirror
+                  value={formattedResponse}
+                  height="100%"
+                  style={{ maxHeight: "100%" }}
+                  extensions={[json(), EditorView.lineWrapping]}
+                  theme={dracula}
+                  className="cm-editor h-screen overflow-auto"
+                  readOnly
+                />
+              </>
+            )}
+
+            {activeTab === "headers" && <ResponseHeaders tabId={tabId} />}
+          </>
         )}
       </div>
     </div>

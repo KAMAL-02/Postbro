@@ -20,7 +20,16 @@ interface ResponseData {
   size?: string;
 }
 
-export const saveRequest = async (userId: string, data: RequestData, responseData?: ResponseData) => {
+const toPlainObject = (headers: any) =>
+  Object.fromEntries(
+    Object.entries(headers).filter(([_, val]) => typeof val !== "function")
+  );
+
+export const saveRequest = async (
+  userId: string,
+  data: RequestData,
+  responseData?: ResponseData
+) => {
   try {
     const request = await prisma.request.create({
       data: {
@@ -34,16 +43,18 @@ export const saveRequest = async (userId: string, data: RequestData, responseDat
       },
     });
 
-    let response ;
+    let response;
 
     if (responseData) {
+      let resHeaders = toPlainObject(responseData.headers || {});
+
       response = await prisma.response.create({
         data: {
           requestId: request.id,
           body: responseData.body || {},
           status: responseData.status,
           statusText: responseData.statusText || "",
-          headers: responseData.headers || {},
+          headers: JSON.parse(JSON.stringify(resHeaders || {})),
           timeTaken: responseData.timeTaken || 0,
           size: responseData.size || "",
         },
