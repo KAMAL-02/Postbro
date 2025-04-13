@@ -12,12 +12,15 @@ export interface Tab {
 interface TabState {
   tabs: Tab[];
   activeTabId: string | null;
+  loadingFromHistory: boolean;
 
   addTab: () => void;
   removeTab: (id: string) => void;
   setActiveTab: (id: string) => void;
   updateTabTitle: (id: string, title: string) => void;
   updateTabMethod: (id: string, method: string) => void;
+  addTabFromHistory: (history: any) => void;
+  setLoadingFromHistory: (loading: boolean) => void;
 }
 
 export const useTabStore = create<TabState>((set) => ({
@@ -77,4 +80,37 @@ export const useTabStore = create<TabState>((set) => ({
     set((state) => ({
       tabs: state.tabs.map((tab) => (tab.id === id ? { ...tab, method } : tab)),
     })),
+
+  loadingFromHistory: false,
+  setLoadingFromHistory: (loading) => set({ loadingFromHistory: loading }),
+
+  addTabFromHistory: (history) => {
+    set({ loadingFromHistory: true });
+  
+    set((state) => {
+      const newTabId = uuidv4();
+      const stringifiedBody = JSON.stringify(history.request.body, null, 2);
+      const newTab = {
+        id: newTabId,
+        title: history.request.title,
+        method: history.request.method,
+        body: stringifiedBody,
+      };
+  
+      const updatedTabs = [...state.tabs, newTab];
+  
+      // Delay hydration to avoid flicker, and update loading state after hydration
+      setTimeout(() => {
+        useRequestStore.getState().initHistoryRequest(newTabId, history);
+        useResponseStore.getState().initHistoryResponse(newTabId, history);
+        set({ loadingFromHistory: false });
+      }, 300);
+  
+      return {
+        tabs: updatedTabs,
+        activeTabId: newTabId,
+      };
+    });
+  },
+  
 }));

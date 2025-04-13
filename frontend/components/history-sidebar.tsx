@@ -14,7 +14,7 @@ import axios from "axios";
 import DeleteHistory from "./rest/delete-history";
 import { getDateLabel } from "@/utils/getDate";
 import { useHistoryStore } from "@/utils/store/historyStore";
-import { useResponseStore } from "@/utils/store/responseStore";
+import { useTabStore } from "@/utils/store/tabStore";
 import { useAuthStore } from "@/utils/store/authStore";
 import { toast } from "sonner";
 import { fetchHistory } from "@/utils/history";
@@ -44,6 +44,7 @@ export function HistorySidebar() {
   );
 
   const { history, setHistory, removeFromHistory } = useHistoryStore();
+  const { addTabFromHistory } = useTabStore();
   const { isLoggedIn } = useAuthStore();
 
   const getMethodColorClass = (method: string) => {
@@ -68,7 +69,7 @@ export function HistorySidebar() {
     };
 
     fetchHistoryHere();
-  }, []);
+  }, [isLoggedIn]);
 
   const groupedHistory: { [key: string]: RequestItem[] } = {};
 
@@ -114,6 +115,19 @@ export function HistorySidebar() {
     }
   };
 
+  const handleHistoryClick = (historyId: string) => {
+    console.log("history", historyId)
+    const historyItem = history.find((item) => item.id === historyId);
+    console.log("historyItem", historyItem)
+    if (historyItem) {
+      addTabFromHistory(historyItem);
+    }else{
+      toast.error("History item not found", {
+        position: "bottom-center",
+      });
+    }
+  }
+
   return (
     <div className="flex h-full">
       <div className="relative flex">
@@ -137,7 +151,7 @@ export function HistorySidebar() {
           }`}
         >
           <div className="p-4 h-full flex flex-col">
-            <div className="flex items-center justify-between mb-4 gap-2">
+            <div className="flex items-center justify-between mb-3 gap-2">
               <div className="relative flex-1">
                 <Search className="absolute top-2.5 left-2 h-4 w-4 text-zinc-400" />
                 <Input
@@ -179,25 +193,25 @@ export function HistorySidebar() {
                         </div>
 
                         {isOpen &&
-                          items.map((req) => (
+                          items.map((history) => (
                             <div
-                              key={req.id}
+                              key={history.id}
                               className="group flex items-center justify-between p-1 gap-2 rounded hover:bg-zinc-800 transition-all"
                             >
-                              <div className="flex items-center gap-2 overflow-hidden">
+                              <div className="flex items-center gap-2 overflow-hidden cursor-pointer" onClick={() => handleHistoryClick(history.id)}>
                                 <span
                                   className={`text-[11px] font-medium ${getMethodColorClass(
-                                    req.method
+                                    history.method
                                   )}`}
                                 >
-                                  {req.method}
+                                  {history.method}
                                 </span>
                                 <span className="text-[13px] text-zinc-300 truncate max-w-[150px]">
-                                  {req.url}
+                                  {history.url}
                                 </span>
                               </div>
                               <button
-                                onClick={() => handleDeleteHistory(req.id)}
+                                onClick={() => handleDeleteHistory(history.id)}
                                 className="text-red-500 transition-opacity opacity-0 group-hover:opacity-100 cursor-pointer"
                               >
                                 <Trash2 size={14} />
@@ -208,7 +222,7 @@ export function HistorySidebar() {
                     );
                   })}
                   {Object.keys(groupedHistory).length === 0 && (
-                    <p className="text-sm text-zinc-400">No history found</p>
+                    <p className="text-sm text-zinc-400 text-center mt-10">No history found</p>
                   )}
                 </>
               )}

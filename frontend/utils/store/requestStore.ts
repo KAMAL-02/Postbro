@@ -18,7 +18,9 @@ interface RequestData {
     params: { key: string; value: string }[];
     headers: { key: string; value: string }[];
     body: any;
+    contentType: string;
     loading: boolean;
+    hasTyped: boolean;
 }
 // interface requestState {
 //     method: string;
@@ -54,9 +56,12 @@ interface RequestState {
     setHeaders: (tabId: string, headers: { key: string; value: string }[]) => void;
     setBody: (tabId: string, body: string) => void;
     setLoading: (tabId: string, loading: boolean) => void;
+    setHasTyped: (tabId: string, hasTyped: boolean) => void;
+    setContentType: (tabId: string, contentType: string) => void;
     
     // Initialize a new request for a tab
     initRequest: (tabId: string) => void;
+    initHistoryRequest: (tabId: string, history: any) => void;
   }
 
   const defaultRequestData: RequestData = {
@@ -64,20 +69,47 @@ interface RequestState {
     url: "",
     activeTab: "body",
     params: [{ key: "", value: "" }],
-    headers: [{ key: "", value: "" }],
+    headers: [{ key: "content-type", value: "application/json" }],
     body: "",
     loading: false,
+    hasTyped: false,
+    contentType: "application/json",
   };
 
 export const useRequestStore = create<RequestState>((set) => ({
     requests: {},
     
-    initRequest: (tabId) => set((state) => ({
-      requests: {
-        ...state.requests,
-        [tabId]: { ...defaultRequestData }
-      }
-    })),
+    initRequest: (tabId) => set((state) => {
+      return {
+        requests: {
+          ...state.requests,
+          [tabId]: { ...defaultRequestData,
+            params: [{ key: "", value: "" }],
+            headers: [{ key: "content-type", value: "application/json" }],
+           }
+        }
+      };
+    }),
+
+    initHistoryRequest: (tabId, history) => set((state) => {
+      const stringifiedBody = JSON.stringify(history.request.body, null, 2);
+      return {
+        requests: {
+          ...state.requests,
+          [tabId]: {
+            ...state.requests[tabId] || defaultRequestData,
+            method: history.request.method,
+            url: history.request.url,
+            title: history.request.title,
+            body: stringifiedBody,
+            // headers: history.request.headers.map((header: any) => ({
+            //   key: header.key,
+            //   value: header.value,
+            // })),
+          }
+        }
+      };
+    }),
     
     setMethod: (tabId, method) => set((state) => ({
       requests: {
@@ -129,12 +161,36 @@ export const useRequestStore = create<RequestState>((set) => ({
       }
     })),
     
-    setBody: (tabId, body) => set((state) => ({
+    setBody: (tabId, body) =>
+      set((state) => {
+        console.log("setBody", body);
+        return {
+          requests: {
+            ...state.requests,
+            [tabId]: {
+              ...(state.requests[tabId] || defaultRequestData),
+              body,
+            },
+          },
+        };
+      }),
+
+      setHasTyped: (tabId, value) => set((state) => ({
+        requests: {
+          ...state.requests,
+          [tabId]: {
+            ...state.requests[tabId],
+            hasTyped: value,
+          },
+        },
+      })),      
+
+    setContentType: (tabId, contentType) => set((state) => ({
       requests: {
         ...state.requests,
         [tabId]: {
           ...state.requests[tabId] || defaultRequestData,
-          body
+          contentType
         }
       }
     })),

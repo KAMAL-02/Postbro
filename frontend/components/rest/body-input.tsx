@@ -1,47 +1,45 @@
 "use client";
 
 import { useRequestStore } from "@/utils/store/requestStore";
-import { useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { json } from "@codemirror/lang-json";
 import { dracula } from "@uiw/codemirror-theme-dracula";
 import { EditorView } from "@codemirror/view";
 import { jsonParseLinter } from "@codemirror/lang-json";
 import { indentOnInput } from "@codemirror/language";
-import { linter, lintGutter } from "@codemirror/lint";
+import { linter } from "@codemirror/lint";
+import BodyTypeDropdown from "./body-type";
 
 interface BodyInputProps {
   tabId: string;
 }
 
-const BodyInput = ({tabId}: BodyInputProps) => {
-  // const { body, setBody } = useRequestStore();
+const BodyInput = ({ tabId }: BodyInputProps) => {
+  const { requests, setBody, setHasTyped } = useRequestStore();
+  const requestData = requests[tabId] || { body: "" };
+  const { body, hasTyped, contentType } = requestData;
 
-  const { requests, setBody } = useRequestStore();
-  const requestData = requests[tabId] || {
-    body: "",
-  };
-  const { body } = requestData;
-
-  const [hasTyped, setHasTyped] = useState(false);
-
-  const handleChange = (value: any) => {
-    if (!hasTyped) {
-      setHasTyped(true);
-    }
+  const handleChange = (value: string) => {
+    if (!hasTyped) setHasTyped(tabId, true);
     setBody(tabId, value);
   };
 
   return (
-    <div className="h-full overflow-auto">
+    <div className="h-full overflow-auto flex flex-col gap-2">
+      {/* Dropdown added here */}
+      <div className="w-fit">
+        <BodyTypeDropdown tabId={tabId} />
+      </div>
+
       <CodeMirror
         value={body}
         extensions={[
-          json(),
+          ...(contentType?.includes("application/json") ? [json()] : []),
           EditorView.lineWrapping,
           indentOnInput(),
-          lintGutter(),
-          ...(hasTyped ? [linter(jsonParseLinter())] : []),
+          ...(hasTyped && contentType?.includes("application/json")
+            ? [linter(jsonParseLinter())]
+            : []),
         ]}
         onChange={handleChange}
         theme={dracula}

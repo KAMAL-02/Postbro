@@ -16,15 +16,20 @@ interface RequestInputsProps {
   tabId: string;
 }
 
-const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
-
-
+const RequestInputs: React.FC<RequestInputsProps> = ({ tabId }) => {
   const requestData = useRequestStore((state) => state.requests[tabId]);
   const setMethod = useRequestStore((state) => state.setMethod);
   const setUrl = useRequestStore((state) => state.setUrl);
   const setLoading = useRequestStore((state) => state.setLoading);
   const initRequest = useRequestStore((state) => state.initRequest);
-  const { setResponse, setStatus, setStatusText, setHeaders, setTimeTaken, setSize } = useResponseStore();
+  const {
+    setResponse,
+    setStatus,
+    setStatusText,
+    setHeaders,
+    setTimeTaken,
+    setSize,
+  } = useResponseStore();
   const { updateTabMethod, tabs, activeTabId } = useTabStore();
   const { isLoggedIn } = useAuthStore();
   const { setHistory } = useHistoryStore();
@@ -34,12 +39,12 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
       initRequest(tabId);
     }
   }, [tabId, requestData, initRequest]);
-  
+
   // guard against missing requestData
   if (!requestData) return null;
-  
+
   const { method, url, params, headers, body, loading } = requestData;
-  
+
   const title = tabs.find((tab) => tab.id === tabId)?.title || "Untitled";
 
   const options = [
@@ -65,8 +70,9 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
   const handleMethodChange = (value: string) => {
     setMethod(tabId, value);
     updateTabMethod(tabId, value);
+    console.log("body is", body);
   };
-  
+
   const handleUrlChange = (value: string) => {
     setUrl(tabId, value);
   };
@@ -88,8 +94,8 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
 
     const axiosConfig: any = {
       ...(isLoggedIn && { withCredentials: true }),
-    }
-  
+    };
+
     if (params && params.length > 0) {
       payload.requestConfig.params = params.reduce(
         (acc: any, param: { key: string; value: string }) => {
@@ -101,7 +107,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
         {}
       );
     }
-  
+
     if (headers && headers.length > 0) {
       payload.requestConfig.headers = headers.reduce(
         (acc: any, header: { key: string; value: string }) => {
@@ -113,14 +119,26 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
         {}
       );
     }
-  
+
+    let requestBody = body;
+
+    const contentTypeHeader =
+      headers.find((h) => h.key.toLowerCase() === "content-type")?.value || "";
+
     if (["POST", "PUT", "PATCH"].includes(method.toUpperCase())) {
-      payload.requestConfig.data = body;
+      if (contentTypeHeader === "application/json") {
+        try {
+          requestBody = JSON.parse(body);
+        } catch (e) {
+          console.warn("Body is not valid JSON string");
+        }
+      }
+      payload.requestConfig.body = requestBody;
     }
 
     console.log("Payload is", payload);
     console.log("Axios config is", axiosConfig);
-    
+
     const startTime = performance.now();
     try {
       const res = await axios.post(
@@ -145,7 +163,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
         const parsed = await fetchHistory(); // Fetch history after a successful request
         setHistory(parsed);
       } else {
-        console.error("Error in response:", res);
+        console.log("response status not 200:", res);
         setResponse(tabId, res.data);
         setStatusText(tabId, res.statusText);
         setStatus(tabId, res.status);
@@ -172,12 +190,12 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
   };
 
   return (
-    <div className="flex w-full items-center gap-3 p-3 rounded-lg shadow-md">
+    <div className="flex w-full items-center gap-2 p-2">
       <Dropdown
         options={options}
         value={method}
         onChange={(e) => handleMethodChange(e.target.value)}
-        className={`w-28 border border-gray-600 bg-[#282828] p-2 rounded-md text-xs font-medium ${
+        className={`w-24 h-8 border border-zinc-800 bg-[#121212] p-2 rounded-xs text-xs font-medium ${
           method === "GET"
             ? "text-green-400"
             : method === "POST"
@@ -207,10 +225,10 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
 
       <Input
         type="text"
-        placeholder="Enter a URL or paste a CURL command"
+        placeholder="Enter URL"
         onChange={(e) => handleUrlChange(e.target.value)}
         value={url}
-        className="flex-1 border border-gray-600 bg-[#282828] text-white p-2 rounded-md"
+        className="flex-1 border border-zinc-800 bg-[#121212] rounded-xs text-white p-2 h-8"
         style={{ fontFamily: "var(--font-jetbrains-mono)" }}
       />
 

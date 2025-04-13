@@ -3,6 +3,8 @@ import { apiSchema } from "../../utils/validation";
 import { Request, Response } from "express";
 import logger from "../../utils/logger";
 import { saveRequest } from "../../services/saveRequest";
+import { getSize } from "../../utils/getSize";
+import { performance } from "perf_hooks";
 
 const sendApiRequest = async (req: Request, res: Response) => {
   console.log("Request body is: ", req.body);
@@ -23,27 +25,31 @@ const sendApiRequest = async (req: Request, res: Response) => {
     return;
   }
 
-  const { method, url, params, headers, bodyData } = requestConfig;
+  const { method, url, params, headers, body } = requestConfig;
   if (!url || !method) {
     res.status(400).json({ message: "All fields are required" });
     return;
   }
+
+  const reqApiConfig: any = {
+    method,
+    url,
+    params: params || {},
+    headers: headers || {},
+    timeout: 10000,
+  }
+
+  if (["POST", "PUT", "PATCH"].includes(method.toUpperCase())) {
+    reqApiConfig.data = body || {};
+  }
+
+  const startTime = performance.now();
   try {
-
-    const requestConfig: any = {
-      method,
-      url,
-      params: params || {},
-      headers: headers || {},
-      timeout: 10000,
-    }
-
-    if (["POST", "PUT", "PATCH"].includes(method.toUpperCase())) {
-      requestConfig.data = bodyData || {};
-    }
-
-    const response = await axios(requestConfig);
-    console.log("Response is: ", response);
+    console.log("Request config is: ", reqApiConfig);
+    const response = await axios(reqApiConfig);
+    const endTime = performance.now();
+    const timeTaken = Math.round(endTime - startTime); // Calculate time taken in milliseconds
+    const size = getSize(response.data); // Get the size of the response data
 
     if(user){
       const { history } = await saveRequest(user.id, {
@@ -51,13 +57,15 @@ const sendApiRequest = async (req: Request, res: Response) => {
         url,
         params,
         headers,
-        body: bodyData,
+        body: body,
         title: metadata?.title || "Untitled",
       }, {
         body: response.data,
         status: response.status,
         statusText: response.statusText,
-        headers: response.headers
+        headers: response.headers,
+        timeTaken,
+        size: size,
       })
       logger.info(`Request saved for user: ${user.email}`);
     }
@@ -65,6 +73,8 @@ const sendApiRequest = async (req: Request, res: Response) => {
     res.status(response.status).send(response.data);
     
   } catch (error) {
+    const endTime = performance.now();
+    const timeTaken = Math.round(endTime - startTime);
     logger.error(`Error in API request: ${error}`);
 
     // Error from the url provided
