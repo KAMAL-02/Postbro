@@ -139,15 +139,16 @@ export const useResponseStore = create<ResponseState>((set) => ({
   })),
   
   setResponseHeaders: (tabId, headers) => {
-    const plainHeaders = Object.fromEntries(
-      Object.entries(headers).filter(([_, val]) => typeof val !== "function")
-    );
+
+    const toPlainObject = Object.fromEntries(
+        Object.entries(headers).filter(([_, val]) => typeof val !== "function")
+      );
     set((state) => ({
       responses: {
         ...state.responses,
         [tabId]: {
           ...state.responses[tabId],
-          headers: plainHeaders,
+          headers: toPlainObject,
         },
       },
     }));

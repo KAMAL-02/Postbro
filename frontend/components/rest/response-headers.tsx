@@ -1,12 +1,21 @@
 import React from "react";
+import { useResponseStore } from "@/utils/store/responseStore";
 
 interface HeadersTableProps {
-  headers: Record<string, string>;
+  tabId: string;
 }
 
-const ResponseHeaders = ({ headers }: HeadersTableProps) => {
+const ResponseHeaders = ({ tabId }: HeadersTableProps) => {
+  const { responses } = useResponseStore();
+  const responseData = responses[tabId];
+  const { headers } = responseData || {};
+
   if (!headers || Object.keys(headers).length === 0) {
-    return <p className="text-xs text-gray-400 flex items-center">No headers available</p>;
+    return (
+      <p className="text-xs text-gray-400 flex items-center">
+        No headers available
+      </p>
+    );
   }
 
   return (
@@ -29,7 +38,7 @@ const ResponseHeaders = ({ headers }: HeadersTableProps) => {
                 {key}
               </td>
               <td className="px-3 py-2 break-words whitespace-normal align-top">
-                {value}
+                {Array.isArray(value) ? value.join(", ") : String(value)}
               </td>
             </tr>
           ))}

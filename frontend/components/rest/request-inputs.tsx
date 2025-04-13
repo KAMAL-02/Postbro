@@ -218,7 +218,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({ tabId }) => {
             ? "text-red-400"
             : "text-white"
         }`}
-        panelClassName="bg-[#282828] text-white border border-gray-600 p-3 text-xs"
+        panelClassName="bg-[#121212] text-white border border-zinc-800 p-3 text-xs"
         itemTemplate={(option) => {
           const colorMap: Record<string, string> = {
             GET: "text-green-400",
@@ -246,7 +246,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({ tabId }) => {
 
       <Button
         type="submit"
-        className="bg-[#df894c] hover:bg-orange-400 text-black font-semibold py-2 px-4 rounded-xs cursor-pointer"
+        className="bg-[#df894c] hover:bg-orange-400 text-black font-semibold py-2 h-8 px-4 rounded-xs cursor-pointer"
         onClick={handleSendRequest}
       >
         Send

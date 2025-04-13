@@ -229,7 +229,7 @@ const ResponseSection = ({ tabId }: ResponseSectionProps) => {
               </>
             )}
 
-            {activeTab === "headers" && <ResponseHeaders headers={headers} />}
+            {activeTab === "headers" && <ResponseHeaders tabId={tabId} />}
           </>
         )}
       </div>
