@@ -222,7 +222,7 @@ export function HistorySidebar() {
                     );
                   })}
                   {Object.keys(groupedHistory).length === 0 && (
-                    <p className="ext-sm text-zinc-400 text-center mt-10">No history found</p>
+                    <p className="text-sm text-zinc-400 text-center mt-10">No history found</p>
                   )}
                 </>
               )}
