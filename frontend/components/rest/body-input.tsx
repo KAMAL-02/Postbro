@@ -7,7 +7,7 @@ import { dracula } from "@uiw/codemirror-theme-dracula";
 import { EditorView } from "@codemirror/view";
 import { jsonParseLinter } from "@codemirror/lang-json";
 import { indentOnInput } from "@codemirror/language";
-import { linter, lintGutter } from "@codemirror/lint";
+import { linter } from "@codemirror/lint";
 import BodyTypeDropdown from "./body-type";
 
 interface BodyInputProps {
@@ -17,7 +17,7 @@ interface BodyInputProps {
 const BodyInput = ({ tabId }: BodyInputProps) => {
   const { requests, setBody, setHasTyped } = useRequestStore();
   const requestData = requests[tabId] || { body: "" };
-  const { body, hasTyped } = requestData;
+  const { body, hasTyped, contentType } = requestData;
 
   const handleChange = (value: string) => {
     if (!hasTyped) setHasTyped(tabId, true);
@@ -28,17 +28,18 @@ const BodyInput = ({ tabId }: BodyInputProps) => {
     <div className="h-full overflow-auto flex flex-col gap-2">
       {/* Dropdown added here */}
       <div className="w-fit">
-        <BodyTypeDropdown />
+        <BodyTypeDropdown tabId={tabId} />
       </div>
 
       <CodeMirror
         value={body}
         extensions={[
-          json(),
+          ...(contentType?.includes("application/json") ? [json()] : []),
           EditorView.lineWrapping,
           indentOnInput(),
-          lintGutter(),
-          ...(hasTyped ? [linter(jsonParseLinter())] : []),
+          ...(hasTyped && contentType?.includes("application/json")
+            ? [linter(jsonParseLinter())]
+            : []),
         ]}
         onChange={handleChange}
         theme={dracula}

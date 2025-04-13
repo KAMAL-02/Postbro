@@ -16,15 +16,20 @@ interface RequestInputsProps {
   tabId: string;
 }
 
-const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
-
-
+const RequestInputs: React.FC<RequestInputsProps> = ({ tabId }) => {
   const requestData = useRequestStore((state) => state.requests[tabId]);
   const setMethod = useRequestStore((state) => state.setMethod);
   const setUrl = useRequestStore((state) => state.setUrl);
   const setLoading = useRequestStore((state) => state.setLoading);
   const initRequest = useRequestStore((state) => state.initRequest);
-  const { setResponse, setStatus, setStatusText, setHeaders, setTimeTaken, setSize } = useResponseStore();
+  const {
+    setResponse,
+    setStatus,
+    setStatusText,
+    setHeaders,
+    setTimeTaken,
+    setSize,
+  } = useResponseStore();
   const { updateTabMethod, tabs, activeTabId } = useTabStore();
   const { isLoggedIn } = useAuthStore();
   const { setHistory } = useHistoryStore();
@@ -34,12 +39,12 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
       initRequest(tabId);
     }
   }, [tabId, requestData, initRequest]);
-  
+
   // guard against missing requestData
   if (!requestData) return null;
-  
+
   const { method, url, params, headers, body, loading } = requestData;
-  
+
   const title = tabs.find((tab) => tab.id === tabId)?.title || "Untitled";
 
   const options = [
@@ -67,7 +72,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
     updateTabMethod(tabId, value);
     console.log("body is", body);
   };
-  
+
   const handleUrlChange = (value: string) => {
     setUrl(tabId, value);
   };
@@ -89,8 +94,8 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
 
     const axiosConfig: any = {
       ...(isLoggedIn && { withCredentials: true }),
-    }
-  
+    };
+
     if (params && params.length > 0) {
       payload.requestConfig.params = params.reduce(
         (acc: any, param: { key: string; value: string }) => {
@@ -102,7 +107,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
         {}
       );
     }
-  
+
     if (headers && headers.length > 0) {
       payload.requestConfig.headers = headers.reduce(
         (acc: any, header: { key: string; value: string }) => {
@@ -115,21 +120,25 @@ const RequestInputs: React.FC<RequestInputsProps> = ({tabId}) => {
       );
     }
 
-    let parsedBody = body;
+    let requestBody = body;
 
-    try {
-      parsedBody = JSON.parse(body);
-    } catch (e) {
-      console.warn("Body is not valid JSON string");
-    }
+    const contentTypeHeader =
+      headers.find((h) => h.key.toLowerCase() === "content-type")?.value || "";
 
     if (["POST", "PUT", "PATCH"].includes(method.toUpperCase())) {
-      payload.requestConfig.body = parsedBody;
+      if (contentTypeHeader === "application/json") {
+        try {
+          requestBody = JSON.parse(body);
+        } catch (e) {
+          console.warn("Body is not valid JSON string");
+        }
+      }
+      payload.requestConfig.body = requestBody;
     }
 
     console.log("Payload is", payload);
     console.log("Axios config is", axiosConfig);
-    
+
     const startTime = performance.now();
     try {
       const res = await axios.post(

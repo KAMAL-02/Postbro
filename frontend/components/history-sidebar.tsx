@@ -151,7 +151,7 @@ export function HistorySidebar() {
           }`}
         >
           <div className="p-4 h-full flex flex-col">
-            <div className="flex items-center justify-between mb-4 gap-2">
+            <div className="flex items-center justify-between mb-3 gap-2">
               <div className="relative flex-1">
                 <Search className="absolute top-2.5 left-2 h-4 w-4 text-zinc-400" />
                 <Input

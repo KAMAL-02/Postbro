@@ -18,6 +18,7 @@ interface RequestData {
     params: { key: string; value: string }[];
     headers: { key: string; value: string }[];
     body: any;
+    contentType: string;
     loading: boolean;
     hasTyped: boolean;
 }
@@ -56,6 +57,7 @@ interface RequestState {
     setBody: (tabId: string, body: string) => void;
     setLoading: (tabId: string, loading: boolean) => void;
     setHasTyped: (tabId: string, hasTyped: boolean) => void;
+    setContentType: (tabId: string, contentType: string) => void;
     
     // Initialize a new request for a tab
     initRequest: (tabId: string) => void;
@@ -71,6 +73,7 @@ interface RequestState {
     body: "",
     loading: false,
     hasTyped: false,
+    contentType: "application/json",
   };
 
 export const useRequestStore = create<RequestState>((set) => ({
@@ -82,7 +85,7 @@ export const useRequestStore = create<RequestState>((set) => ({
           ...state.requests,
           [tabId]: { ...defaultRequestData,
             params: [{ key: "", value: "" }],
-            headers: [{ key: "", value: "" }],
+            headers: [{ key: "content-type", value: "application/json" }],
            }
         }
       };
@@ -181,6 +184,16 @@ export const useRequestStore = create<RequestState>((set) => ({
           },
         },
       })),      
+
+    setContentType: (tabId, contentType) => set((state) => ({
+      requests: {
+        ...state.requests,
+        [tabId]: {
+          ...state.requests[tabId] || defaultRequestData,
+          contentType
+        }
+      }
+    })),
     
     setLoading: (tabId, loading) => set((state) => ({
       requests: {
