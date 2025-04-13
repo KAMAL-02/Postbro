@@ -246,7 +246,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({ tabId }) => {
 
       <Button
         type="submit"
-        className="bg-[#df894c] hover:bg-orange-400 text-black font-semibold py-2 px-4 rounded-md cursor-pointer"
+        className="bg-[#df894c] hover:bg-orange-400 text-black font-semibold py-2 px-4 rounded-xs cursor-pointer"
         onClick={handleSendRequest}
       >
         Send

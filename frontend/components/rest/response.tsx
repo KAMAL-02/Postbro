@@ -202,7 +202,7 @@ const ResponseSection = ({ tabId }: ResponseSectionProps) => {
       )}
 
       {/* Tab Content */}
-      <div className="flex-1 overflow-auto max-w-full mb-5">
+      <div className="flex-1 overflow-auto max-w-full mb-9">
         {loading ? (
           <div className="flex justify-center items-center h-full">
             <FadeLoader
