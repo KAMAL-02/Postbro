@@ -1,9 +1,11 @@
 import React from 'react'
+import { UrlInputs } from '@/components/realtime/url-inputs'
+import { Realtime } from '@/components/realtime/realtime'
 
 const page = () => {
   return (
     <div className='text-white'>
-      Hello
+      <Realtime />
     </div>
   )
 }

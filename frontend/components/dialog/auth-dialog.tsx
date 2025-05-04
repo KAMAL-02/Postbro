@@ -70,7 +70,7 @@ const AuthDialog = () => {
         },
         { withCredentials: true }
       );
-
+      localStorage.setItem("userId", data.userId);
       toast.success(data.message || "Success!");
       if (!isLogin) {
         toast.success("Account created! Please log in.");
