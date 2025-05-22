@@ -10,7 +10,7 @@ on:
       - '.github/workflows/**'
 
 jobs:
-  build and push:
+  build-and-push:
      runs-on: ubuntu-latest
      steps:
       - name: Checkout code
