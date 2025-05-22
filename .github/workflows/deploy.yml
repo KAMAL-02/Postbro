@@ -16,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # - name: Check file changes
+      # - name: Check file changess
       #   run: |
       #        echo "FRONTEND_CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^frontend/' | wc -l)" >> $GITHUB_ENV
       #        echo "BACKEND_CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^Backend/' | wc -l)" >> $GITHUB_ENV
