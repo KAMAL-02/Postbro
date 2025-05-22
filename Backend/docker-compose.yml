@@ -1,27 +1,23 @@
 services:
-#   postgres:
-#     image: postgres:15
-#     container_name: postbro
-#     environment:
-#       POSTGRES_USER: postgres
-#       POSTGRES_PASSWORD: postgres
-#       POSTGRES_DB: postbro
-#     ports:
-#       - "5432:5432"
-#     volumes:
-#       - postbro_data:/var/lib/postgresql/data
-  
-  backend:
-    image: kamal2502/postman-backend:1.0.0
+
+  postman-backend:
+    image: kamal2502/postman-backend:latest
     container_name: postman-backend
     ports:
       - "5000:5000"
     environment:
-      - DATABASE_URL=YOUR_DATABASE_URL
+      - DATABASE_URL=postgresql://postman_db_owner:npg_4ekJIAcRp3xh@ep-jolly-mouse-a4wbr9th-pooler.us-east-1.aws.neon.tech/postman_db?sslmode=require
+      - JWT_SECRET=dfkljaksfhasfnlaskfjslafjskefjlsnvlfaskefjkasejflasjfklasjflajf
       - PORT=5000
-      - JWT_SECRET=YOUR_JWT_SECRET
       - CORS_ORIGIN=http://localhost:3000
     restart: unless-stopped
-
-# volumes:
-#   postbro_data:
+  
+  postman-frontend:
+    image: kamal2502/postman-frontend:latest
+    container_name: postman-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_BASE_URL=http://localhost:5000/api
+      - NEXT_PUBLIC_REALTIME_API_URL=localhost:5000/api
+    restart: unless-stopped
