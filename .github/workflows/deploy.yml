@@ -22,7 +22,6 @@ jobs:
           echo "docker password: ${{ secrets.DOCKER_PASSWORD }}"
           echo "remote host: ${{ secrets.REMOTE_HOST }}"
           echo "remote username: ${{ secrets.REMOTE_USERNAME }}"
-          echo "remote ssh private key: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}"
 
       # - name: Check file changes
       #   run: |
