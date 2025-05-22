@@ -1,6 +1,7 @@
 "use client";
 
 import CodeMirror from "@uiw/react-codemirror";
+import { EditorView } from "@codemirror/view";
 import { dracula } from "@uiw/codemirror-theme-dracula";
 import { SendHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,7 @@ const BodyInput = () => {
           value={message}
           onChange={(value) => setMessage(value)}
           theme={dracula}
+          extensions={[EditorView.lineWrapping]}
           className="cm-editor overflow-auto"
           height="100%"
           style={{ maxHeight: "100%" }}

@@ -12,8 +12,8 @@ const Response = () => {
   const renderMessages = () => {
     if (messages.length === 0) {
       return (
-        <div className="text-center text-muted-foreground py-10">
-          No messages yet. Connect to a WebSocket to start receiving data.
+        <div className="text-center text-muted-foreground py-10" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
+          Connect to a WebSocket to start receiving data.
         </div>
       );
     }
@@ -29,7 +29,7 @@ const Response = () => {
                 ) : (
                   <MoveDownLeft className="w-4 h-4 text-green-500" />
                 )}
-                <div className="text-sm break-words whitespace-pre-wrap text-white">
+                <div className="text-md break-words whitespace-pre-wrap text-gray-300" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
                   {(() => {
                     try {
                       const json = JSON.parse(message.data);
@@ -63,7 +63,7 @@ const Response = () => {
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
-      <div className="flex items-center justify-between border-b px-4 py-2">
+      <div className="flex items-center justify-between border-b border-zinc-800 px-4 py-2">
         <h2 className="text-sm font-semibold text-gray-300">Response</h2>
         <Badge className={`${getStatusColor(status)}`}>{status}</Badge>
       </div>
