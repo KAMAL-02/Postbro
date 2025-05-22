@@ -22,48 +22,8 @@ model User {
 
   requests    Request[]
   histories   History[]
+  webSockets  RealTimeSession[]
 }
-
-// model Request {
-//   id           String     @id @default(cuid())
-//   title         String?
-//   url          String
-//   method       HttpMethod
-//   headers      Json?
-//   params       Json?
-//   body         Json?
-//   userId       String
-//   createdAt    DateTime   @default(now())
-
-//   user       User        @relation(fields: [userId], references: [id])
-//   response    Response?  @relation(fields: [responseId], references: [id])
-//   responseId  String?    @unique
-
-//   history     History?   
-// }
-
-// model Response {
-//   id        String   @id @default(cuid())
-//   body      Json?
-//   status    Int
-//   statusText String?
-//   headers   Json?
-//   requestId String
-//   createdAt DateTime @default(now())
-
-//   request    Request?
-// }
-
-// model History {
-//   id        String   @id @default(cuid())
-//   requestId String?  @unique
-//   userId    String
-//   timestamp DateTime @default(now())
-
-//   request   Request  @relation(fields: [requestId], references: [id])
-//   user      User     @relation(fields: [userId], references: [id])
-// }
-
 model Request {
   id           String     @id @default(cuid())
   title        String?
@@ -102,6 +62,35 @@ model History {
 
   request   Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id])
+}
+
+model RealTimeSession {
+  id         String   @id @default(cuid())
+  url        String
+  userId     String?
+  startTime  DateTime @default(now())
+  endTime    DateTime?
+
+  messageCountSent     Int     @default(0)
+  messageCountReceived Int     @default(0)
+
+  user       User?     @relation(fields: [userId], references: [id])
+  messages   RealTimeMessage[]
+}
+
+model RealTimeMessage {
+  id         String   @id @default(cuid())
+  sessionId  String
+  direction  MessageDirection
+  data       String
+  timestamp  DateTime @default(now())
+
+  session    RealTimeSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+enum MessageDirection {
+  sent
+  received
 }
 
 enum HttpMethod {

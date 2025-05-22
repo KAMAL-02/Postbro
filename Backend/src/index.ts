@@ -5,11 +5,13 @@ import apiRoutes from './routes/apiRoutes';
 import limiter from './utils/rateLimit';
 import logger from './utils/logger';
 import cookieParser from "cookie-parser";
-
+import http from 'http';
+import { initWebSocketServer } from './controllers/request/realtimeController';
 
 //Configuration
 config();
 const app = express();
+const server = http.createServer(app);
 
 //Middleware
 app.use(cookieParser());
@@ -20,7 +22,6 @@ app.use(cors({
 }));
 app.use(express.json());
 
-
 //Routes
 app.use('/api', apiRoutes);
 
@@ -28,9 +29,12 @@ app.use('/api', apiRoutes);
 app.get('/', (req, res) => {
     logger.info("Health check")
     res.send("Hello World!");
-})
+});
+
+// Initialize WebSocket server
+initWebSocketServer(server);
 
 //Listen to the server
-app.listen(process.env.PORT, () => {
+server.listen(process.env.PORT, () => {
     logger.info(`🚀 Server running on port ${process.env.PORT}`);
-})
+});

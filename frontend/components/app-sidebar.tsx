@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { usePathname } from "next/navigation"
+import Link from "next/link"
 
 const items = [
   { title: "Rest", url: "/", icon: Link2 },
@@ -40,7 +41,7 @@ export function AppSidebar() {
                   return (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild>
-                        <a
+                        <Link
                           href={item.url}
                           className={`flex items-center gap-3 p-2 rounded-md transition-all
                             ${isActive ? "bg-[rgba(207,104,21,0.3)] text-[#df894c]" : ""} 
@@ -59,7 +60,7 @@ export function AppSidebar() {
                             <TooltipContent side="right" align="center" className="text-[#df894c] text-sm">{item.title}</TooltipContent>
                           </Tooltip>
                           )}
-                        </a>
+                        </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );

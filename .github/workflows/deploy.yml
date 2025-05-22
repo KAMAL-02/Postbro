@@ -1,0 +1,52 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+      - 'Backend/**'
+      - '.github/workflows/**'
+
+jobs:
+  build and push:
+     runs-on: ubuntu-latest
+     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check file changes
+        run: |
+             echo "FRONTEND_CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^frontend/' | wc -l)" >> $GITHUB_ENV
+             echo "BACKEND_CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^Backend/' | wc -l)" >> $GITHUB_ENV
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push FE image
+        if: env.FRONTEND_CHANGED != '0'
+        run: |
+            docker build -t kamal2502/postman-frontend:latest ./frontend
+            docker push kamal2502/postman-frontend:latest
+        
+      - name: Build and push BE image
+        if: env.BACKEND_CHANGED != '0'
+        run: |
+            docker build -t kamal2502/postman-backend:latest ./Backend
+            docker push kamal2502/postman-backend:latest
+
+      - name: Deploy to server
+        if: env.FRONTEND_CHANGED != '0' || env.BACKEND_CHANGED != '0'
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USERNAME }}
+          key: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/projects/postman
+            chmod +x ./deploy.sh
+            ./deploy.sh
