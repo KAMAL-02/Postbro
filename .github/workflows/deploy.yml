@@ -16,13 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name : debug
-        run : |
-          echo "docker username: ${{ secrets.DOCKER_USERNAME }}"
-          echo "docker password: ${{ secrets.DOCKER_PASSWORD }}"
-          echo "remote host: ${{ secrets.REMOTE_HOST }}"
-          echo "remote username: ${{ secrets.REMOTE_USERNAME }}"
-
       # - name: Check file changes
       #   run: |
       #        echo "FRONTEND_CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^frontend/' | wc -l)" >> $GITHUB_ENV
