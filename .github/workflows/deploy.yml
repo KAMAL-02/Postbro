@@ -30,7 +30,10 @@ jobs:
       - name: Build and push FE image
         # if: env.FRONTEND_CHANGED != '0'
         run: |
-            docker build -t kamal2502/postman-frontend:latest ./frontend
+            docker build \
+            --build-arg NEXT_PUBLIC_BASE_URL=${{ secrets.NEXT_PUBLIC_BASE_URL }} \
+            --build-arg NEXT_PUBLIC_REALTIME_API_URL=${{ secrets.NEXT_PUBLIC_REALTIME_API_URL }} \
+             -t kamal2502/postman-frontend:latest ./frontend
             docker push kamal2502/postman-frontend:latest
         
       - name: Build and push BE image
