@@ -35,6 +35,8 @@ const RequestInputs: React.FC<RequestInputsProps> = ({ tabId }) => {
   const { isLoggedIn } = useAuthStore();
   const { setHistory } = useHistoryStore();
 
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
   useEffect(() => {
     if (tabId && !requestData) {
       initRequest(tabId);
@@ -147,7 +149,7 @@ const RequestInputs: React.FC<RequestInputsProps> = ({ tabId }) => {
     const startTime = performance.now();
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/request",
+        `${BASE_URL}/request`,
         payload,
         axiosConfig
       );

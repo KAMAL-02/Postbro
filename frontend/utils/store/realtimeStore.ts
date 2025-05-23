@@ -104,6 +104,7 @@ export const useRealtimeStore = create<RealtimeStore>((set, get) => ({
         
         try {
             const proxyUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${BASE_URL}/websocket`;
+            console.log('Connecting to WebSocket server at:', proxyUrl);
             const socket = new WebSocket(proxyUrl);
             
             socket.onopen = () => {
